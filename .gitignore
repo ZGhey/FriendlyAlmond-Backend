@@ -1,0 +1,10 @@
+.idea
+bin/
+log/
+cmd/api/log/
+
+stdout.log
+go.sum
+cmd/api/docs
+Production_Makefile
+cansul-clint

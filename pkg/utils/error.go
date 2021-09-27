@@ -1,0 +1,135 @@
+package utils
+
+const (
+	RECODE_OK               = "0"
+	RECODE_UNIMPLEMENTED    = "1"
+	RECODE_DBERR            = "4001"
+	RECODE_NODATA           = "4002"
+	RECODE_DATAEXIST        = "4003"
+	RECODE_DATAERR          = "4004"
+	RECODE_MICROERR         = "4005"
+	RECODE_STOREDATA_FAILED = "4006"
+	RECODE_DATAINEXISTENCE  = "4007"
+	RECODE_STOREDATA_OK     = "4008"
+
+	RECODE_TOKENERR          = "4101"
+	RECODE_LOGINERR          = "4102"
+	RECODE_PARAMERR          = "4103"
+	RECODE_USERONERR         = "4104"
+	RECODE_ROLEERR           = "4105"
+	RECODE_AMOUNT            = "4106"
+	RECODE_USERERR           = "4107"
+	RECODE_SMSERR            = "4108"
+	RECODE_FOLLOWEER         = "4109"
+	RECODE_UPLOADERR         = "4110"
+	RECODE_UPLOADPROFILEERR  = "4111"
+	RECODE_UPLOADBANNERERR   = "4112"
+	RECODE_USEDEFAULTIMG     = "4113"
+	RECODE_GENERATETOKENERR  = "4114"
+	RECODE_TOKENEXPIRED      = "4115"
+	RECODE_DECODEIMGERR      = "4116"
+	RECODE_PROFILEERR        = "4117"
+	RECODE_BANNERERR         = "4118"
+	RECODE_DELETEBLOBERR     = "4119"
+	RECODE_EXISTSPOINTERR    = "4120"
+	RECODE_USERNOEXISTSERR   = "4121"
+	RECODE_USERDUPLICATEDERR = "4124"
+
+	//withdraw
+	RECODE_WITHDRAW_LOWFEE = "4122"
+	RECODE_WITHDRAW_GASFEE = "4123"
+
+	//verify image
+	RECODE_CAPTCHA_GENERATEERR = "4125"
+	RECODE_CAPTCHA_VERIFYERR   = "4126"
+
+	//4200
+	RECODE_OOP_CONTENT = "4201"
+	//4300 trad for ocard or opspoint
+	RECODE_INSUFFICIENT_FUND = "4301"
+	//4500
+	RECODE_UNKNOWERR = "4501"
+	//4600
+	RECODE_REPEAT_FOLLOW       = "4601"
+	RECODE_FOLLOWING_NOT_EXIST = "4602"
+
+	RECODE_LIKE_STAR_INVALID = "4603"
+	RECODE_NOT_FOLLOW        = "4604"
+
+	RECODE_NUMBER_OF_IMAGE_EXCEEDS_LIMIT = "4605"
+
+	RECODE_THUMBNAIL_GENERATION_FAILED = "4606"
+
+	RECODE_SHARED_OOP_IS_CRETOR = "4607"
+
+	RECODE_ORDINARY_SHARE_CAN_NOT_UPDATE = "4608"
+
+	RECODE_COMMENTED_OOP_CAN_NOT_UPDATE = "4609"
+)
+
+var recodeText = map[string]string{
+	RECODE_OK:               "成功",
+	RECODE_UNIMPLEMENTED:    "接口还未实现",
+	RECODE_DBERR:            "数据库查询错误",
+	RECODE_NODATA:           "无数据",
+	RECODE_DATAEXIST:        "数据已存在",
+	RECODE_DATAERR:          "数据错误",
+	RECODE_MICROERR:         "微服务错误",
+	RECODE_STOREDATA_FAILED: "数据存入失败",
+	RECODE_DATAINEXISTENCE:  "数据不存在",
+	RECODE_STOREDATA_OK:     "数据存入成功",
+
+	RECODE_TOKENERR:          "TOKEN校验失败",
+	RECODE_LOGINERR:          "签名或验证码校验失败",
+	RECODE_PARAMERR:          "参数错误",
+	RECODE_USERONERR:         "用户已经注册",
+	RECODE_ROLEERR:           "用户身份错误",
+	RECODE_AMOUNT:            "用户发行数量超过限制",
+	RECODE_USERERR:           "用户不存在或未激活",
+	RECODE_FOLLOWEER:         "关注失败",
+	RECODE_UPLOADERR:         "上传文件失败",
+	RECODE_UPLOADPROFILEERR:  "上传头像失败",
+	RECODE_UPLOADBANNERERR:   "上传背景图失败",
+	RECODE_USEDEFAULTIMG:     "使用默认图片",
+	RECODE_GENERATETOKENERR:  "生成Token失败",
+	RECODE_TOKENEXPIRED:      "Token过期",
+	RECODE_DECODEIMGERR:      "解码图片失败",
+	RECODE_PROFILEERR:        "头像大于500k",
+	RECODE_BANNERERR:         "背景图大于1M",
+	RECODE_DELETEBLOBERR:     "删除BLOB失败",
+	RECODE_EXISTSPOINTERR:    "尚有Point未导出",
+	RECODE_USERNOEXISTSERR:   "用户不存在",
+	RECODE_WITHDRAW_LOWFEE:   "提现失败，手续费过低",
+	RECODE_WITHDRAW_GASFEE:   "手续费不匹配",
+	RECODE_USERDUPLICATEDERR: "用户已经存在",
+
+	RECODE_OOP_CONTENT: "字数超过限制",
+
+	//4300
+	RECODE_INSUFFICIENT_FUND: "用户OPS-Point或OCard余额不足",
+	RECODE_UNKNOWERR:         "未知错误",
+
+	//图片校验
+	RECODE_CAPTCHA_GENERATEERR: "生成校验图片失败",
+	RECODE_CAPTCHA_VERIFYERR:   "校验失败",
+
+	//4600
+	RECODE_REPEAT_FOLLOW:                 "您已关注过该用户，请勿重复关注",
+	RECODE_FOLLOWING_NOT_EXIST:           "被关注者不存在",
+	RECODE_LIKE_STAR_INVALID:             "点赞类型无效",
+	RECODE_NOT_FOLLOW:                    "你还未关注该用户，无法取关",
+	RECODE_NUMBER_OF_IMAGE_EXCEEDS_LIMIT: "图片数量超出限制",
+
+	RECODE_THUMBNAIL_GENERATION_FAILED:   "缩略图生成失败",
+	RECODE_SHARED_OOP_IS_CRETOR:          "不能转发自己的oop",
+	RECODE_ORDINARY_SHARE_CAN_NOT_UPDATE: "普通转发不能被修改",
+	RECODE_COMMENTED_OOP_CAN_NOT_UPDATE:  "被评论的oop不能被修改",
+}
+
+func RecodeTest(code string) string {
+	str, ok := recodeText[code]
+	if ok {
+		return str
+	}
+	return recodeText[RECODE_UNKNOWERR]
+}

@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  #web
+  web:
+    image: FriendlyAlmond/backend:1.0.1
+    container_name: api
+    restart: "no"
+    networks:
+      - fa_net
+    command: "api -f conf/api.yaml"
+    volumes:
+      - /root/data/log:/opt/fa/log
+
+  #login
+  login:
+    image: FriendlyAlmond/backend:1.0.1
+    container_name: login
+    restart: "no"
+    networks:
+      - fa_net
+    command: "login -f conf/login.yaml"
+    volumes:
+      - /root/data/log:/opt/fa/log
+
+networks:
+  fa_net:
+    external: true

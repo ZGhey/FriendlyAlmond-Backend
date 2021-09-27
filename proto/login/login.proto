@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package login;
+
+option go_package = "./proto/login;pbLogin";
+
+service Login {
+
+  rpc GenerateCaptcha(Empty)returns(Captcha){}
+  rpc Register(UserInfo)returns(OperationResult){}
+  rpc Update(UserInfo)returns(OperationResult){}
+  rpc Query(UserInfo)returns(UserInfo){}
+}
+
+message Empty{}
+
+message Captcha{
+  string Id = 1;
+  string Image = 2;
+  string Answer = 3;
+  string StatusCode = 4;
+}
+
+message UserInfo{
+  string FirstName = 1;
+  string Password = 2;
+  string Email = 3;
+  string Uid = 4;
+  string Phone = 5;
+  string Address = 6;
+  Captcha Captcha = 7;
+  OperationResult OperationResult = 8;
+  string MiddleName = 9;
+  string LastName = 10;
+  string AreaCode = 11;
+}
+
+message OperationResult{
+  string statusCode = 1;
+}

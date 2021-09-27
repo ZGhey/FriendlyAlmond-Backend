@@ -1,0 +1,7 @@
+tls_domain: localhost
+log_path: ./log/api
+cert_folder: ./conf/cert
+swagger_doc_url: http://localhost:8080/swagger/doc.json
+port: 8080 # Changes do not commit!
+micro:
+  addr: localhost
