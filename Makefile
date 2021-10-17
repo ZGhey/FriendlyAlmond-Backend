@@ -15,7 +15,7 @@ MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 MKFILE_DIR := $(dir $(MKFILE_PATH))
 MKFILE_DIR := $(dir $(MKFILE_PATH))
 RELEASE_DIR := ${MKFILE_DIR}bin
-DOCKER_TAG := FriendlyAlmond/backend
+DOCKER_TAG := zeroone/fa_backend
 
 # Version
 RELEASE?=1.0.1
@@ -46,7 +46,7 @@ api login:
 	-o ${RELEASE_DIR}/$@ ${MKFILE_DIR}cmd/$@/
 
 docker_build:
-	docker build -t ${DOCKER_TAG}:${RELEASE} -f deployment/Dockerfile . --network=host
+	docker build -t ${DOCKER_TAG}:${RELEASE} -f deploy/Dockerfile . --network=host
 
 docker_push:
 	docker tag ${DOCKER_TAG}:${RELEASE} registry.cn-hongkong.aliyuncs.com/${DOCKER_TAG}:${RELEASE} && \

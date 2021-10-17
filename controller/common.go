@@ -4,6 +4,7 @@ import (
 	"FriendlyAlmond_backend/pkg/logger"
 	baseModel "FriendlyAlmond_backend/pkg/model"
 	"FriendlyAlmond_backend/pkg/model/consulreg"
+	pbConfig "FriendlyAlmond_backend/proto/configuration"
 	pbLogin "FriendlyAlmond_backend/proto/login"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -23,9 +24,11 @@ func responseHTTP(ctx *gin.Context, statusCode int, data jsonResult) {
 }
 
 var (
-	rpcLoginService pbLogin.LoginService
+	rpcLoginService  pbLogin.LoginService
+	rpcConfigService pbConfig.ConfigurationService
 )
 
 func InitRpcCaller() {
 	rpcLoginService = pbLogin.NewLoginService("login", consulreg.MicroSer.Client())
+	rpcConfigService = pbConfig.NewConfigurationService("configuration", consulreg.MicroSer.Client())
 }

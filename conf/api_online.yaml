@@ -1,0 +1,7 @@
+tls_domain: 47.74.85.143
+log_path: ./log/api
+cert_folder: ./conf/cert
+swagger_doc_url: http://47.74.85.143:9090/swagger/doc.json
+port: 9090
+micro:
+  addr: srv1,srv2,srv3

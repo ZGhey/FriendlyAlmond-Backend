@@ -11,6 +11,7 @@ import (
 
 type Login struct{}
 
+//GenerateCaptcha create a captcha, it used for user login and sign in
 func (l *Login) GenerateCaptcha(ctx context.Context, req *pbLogin.Empty, resp *pbLogin.Captcha) error {
 	defer func() {
 		logger.Infof("calling GenerateCaptcha success, resp.CaptchaId=%+v", resp.Id)
@@ -27,6 +28,7 @@ func (l *Login) GenerateCaptcha(ctx context.Context, req *pbLogin.Empty, resp *p
 	return nil
 }
 
+//Register receive the user information when user sign in a new account
 func (l *Login) Register(ctx context.Context, req *pbLogin.UserInfo, resp *pbLogin.OperationResult) error {
 	defer func() {
 		logger.Infof("calling Register success, req=%+v resp=%+v", req, resp)
@@ -45,11 +47,12 @@ func (l *Login) Register(ctx context.Context, req *pbLogin.UserInfo, resp *pbLog
 		mysql.UserDB.Create(&userInfo)
 		resp.StatusCode = utils.RECODE_OK
 	} else {
-		resp.StatusCode = utils.RECODE_LOGINERR
+		resp.StatusCode = utils.RECODE_CAPTCHA_VERIFYERR
 	}
 	return nil
 }
 
+//Update when user update their info like phone number or email
 func (l *Login) Update(ctx context.Context, req *pbLogin.UserInfo, resp *pbLogin.OperationResult) error {
 	defer func() {
 		logger.Infof("calling Update success, req=%+v resp=%+v", req, resp)
@@ -73,6 +76,7 @@ func (l *Login) Update(ctx context.Context, req *pbLogin.UserInfo, resp *pbLogin
 
 }
 
+//Query when user get their info from the database, the function will return it
 func (l *Login) Query(ctx context.Context, req *pbLogin.UserInfo, resp *pbLogin.UserInfo) error {
 	defer func() {
 		logger.Infof("calling Query success, req=%+v resp=%+v", req, resp)
@@ -99,18 +103,24 @@ func (l *Login) Query(ctx context.Context, req *pbLogin.UserInfo, resp *pbLogin.
 	return nil
 }
 
-func (l *Login) Login(ctx context.Context, req *pbLogin.Empty, resp *pbLogin.Captcha) error {
+//Login when user login the system, the first step need user pass the captcha test, then the func will verify the email and password, finally, return the statusCode
+func (l *Login) Login(ctx context.Context, req *pbLogin.UserInfo, resp *pbLogin.OperationResult) error {
 	defer func() {
 		logger.Infof("calling Login success,  req=%+v resp=%+v", req, resp)
 	}()
-	captchaId, captchaImage, err := CaptMake()
-	if err != nil {
-		logger.Error(err.Error())
-		resp.StatusCode = utils.RECODE_CAPTCHA_GENERATEERR
-		return nil
+	if CaptVerify(req.Captcha.Id, req.Captcha.Answer) {
+		userInfo := new(login.UserInfo)
+		mysql.UserDB.Where(&login.UserInfo{Uid: req.Uid, Email: req.Email, Password: req.Password}).Find(&userInfo)
+		if req.Email == userInfo.Email && req.Password == userInfo.Password {
+			resp.StatusCode = utils.RECODE_OK
+			return nil
+		} else if req.Email != userInfo.Email || req.Password != userInfo.Password {
+			resp.StatusCode = utils.RECODE_LOGINERR
+			return nil
+		}
+
+	} else {
+		resp.StatusCode = utils.RECODE_CAPTCHA_VERIFYERR
 	}
-	resp.StatusCode = utils.RECODE_OK
-	resp.Id = captchaId
-	resp.Image = captchaImage
 	return nil
 }

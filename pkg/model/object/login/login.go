@@ -32,7 +32,7 @@ type UserInfo struct {
 	Email      string `gorm:"not null" json:"email" bind:"required"`
 	Uid        string `gorm:"not null;unique;primaryKey"`
 	Created    int64  `gorm:"autoCreateTime"`
-	Updated    int64  `gorm:"autoCreateTime"`
+	Updated    int64  `gorm:"autoUpdateTime"`
 	Phone      string `json:"phone"`
 	Address    string `json:"address"`
 	AreaCode   string `gorm:"not null;" json:"area_code"`

@@ -11,8 +11,8 @@ FROM alpine:latest
 
 WORKDIR /opt/fa
 
-COPY deployment/entrypoint.sh /
-COPY deployment/glibc-2.33-r0.apk /tmp/
+COPY deploy/entrypoint.sh /
+COPY deploy/glibc-2.33-r0.apk /tmp/
 COPY --from=builder /opt/fa/bin/ /opt/fa/bin/
 COPY --from=builder /opt/fa/conf/ /opt/fa/conf/
 

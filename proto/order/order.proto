@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "./proto/order;pbOrder";

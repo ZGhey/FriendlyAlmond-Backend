@@ -5,22 +5,18 @@ import (
 	"FriendlyAlmond_backend/pkg/utils"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"sync"
 	"time"
 )
 
 var (
-	db   *gorm.DB
-	once sync.Once
+	db *gorm.DB
 )
 
 func InitDB(url string) (*gorm.DB, error) {
 	var (
 		err error
 	)
-	once.Do(func() {
-		db, err = setConnect(url)
-	})
+	db, err = setConnect(url)
 	return db, err
 }
 

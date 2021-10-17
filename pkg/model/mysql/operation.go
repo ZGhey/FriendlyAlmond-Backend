@@ -8,9 +8,10 @@ import (
 )
 
 var (
-	UserDB  *gorm.DB
-	OrderDB *gorm.DB
-	Staff   *gorm.DB
+	UserDB       *gorm.DB
+	OrderDB      *gorm.DB
+	Staff        *gorm.DB
+	ConfigBoatDB *gorm.DB
 )
 
 func InitMyDB() error {
@@ -18,6 +19,7 @@ func InitMyDB() error {
 	UserDB, err = InitDB(utils.GetConfigStr("mysql.user"))
 	OrderDB, err = InitDB(utils.GetConfigStr("mysql.order"))
 	Staff, err = InitDB(utils.GetConfigStr("mysql.staff"))
+	ConfigBoatDB, err = InitDB(utils.GetConfigStr("mysql.config_boat"))
 
 	err = UserDB.AutoMigrate(&login.UserInfo{})
 	if err != nil {

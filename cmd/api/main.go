@@ -69,7 +69,7 @@ import (
 func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
 	router := gin.Default()
 	// swagger
-	docs.SwaggerInfo.Host = utils.GetConfigStr("tls_domain")
+	docs.SwaggerInfo.Host = utils.GetConfigStr("tls_domain") + ":" + utils.GetConfigStr("port")
 	url := ginSwagger.URL(utils.GetConfigStr("swagger_doc_url"))
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
@@ -83,17 +83,20 @@ func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
 		r1.POST("/register", controller.Register)
 		r1.POST("/update", controller.Update)
 		r1.POST("/query", controller.Query)
+		r1.POST("/login", controller.Login)
+	}
+
+	r2 := router.Group("api/v1.0/config")
+	{
+		r2.POST("/query-boat", controller.QueryBoat)
+		r2.POST("/query-component", controller.QueryComponent)
+		r2.POST("/query-section", controller.QuerySection)
 	}
 
 	if middleWare != nil {
 		router.Use(middleWare)
 	}
 
-	//r2 := router.Group("api/v1.0/user")
-	//{
-	//	r2.POST("/store", controller.StoreUserInfo)
-	//	r2.PUT("/update", controller.UpdateUserInfo)
-	//}
 	return router
 }
 
@@ -116,7 +119,7 @@ func main() {
 	defer logger.Sync()
 
 	//Create service
-	err = consulreg.InitMicro(utils.GetConfigStr("micro.addr"), "api")
+	err = consulreg.InitMicro(utils.GetConfigStr("micro.addr"), "fa_api")
 	if err != nil {
 		daemon.Exit(-1, err.Error())
 	}

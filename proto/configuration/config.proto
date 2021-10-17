@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package configuration;
+
+option go_package = "./proto/configuration;pbConfig";
+
+service Configuration{
+  rpc QueryBoat(Empty)returns(ListBoat){}
+  rpc QueryCategory(Boat)returns(ListCategory){}
+  rpc QueryComponent(Category)returns(ListComponent){}
+  rpc QueryPackage(Empty)returns(ListPackage){}
+  rpc QuerySection(Category)returns(ListSection){}
+  rpc QuerySupplier(Empty)returns(ListSupplier){}
+}
+message Empty{}
+message ListBoat{
+  string StatusCode = 1;
+  repeated Boat Data = 2;
+}
+
+message ListCategory{
+  string StatusCode = 1;
+  repeated Category Data= 2;
+}
+
+message ListComponent{
+  string StatusCode = 1;
+  repeated Component Data = 2;
+}
+
+message ListPackage{
+  string StatusCode = 1;
+  repeated Package Data = 2;
+}
+
+message ListSection{
+  string StatusCode = 1;
+  repeated Section Data = 2;
+}
+
+message ListSupplier{
+  string StatusCode = 1;
+  repeated Supplier Data = 2;
+}
+
+message Boat{
+  int64 Id = 1;
+  string Name = 2;
+  int64 Size = 3;
+  string Shape = 4;
+  string Description = 5;
+}
+
+message Category{
+  int64 Id = 1;
+  string Type = 2;
+  string Name = 3;
+  string Description = 4;
+}
+
+message Component{
+  int64 Id = 1;
+  string Name = 2;
+  string Details = 3;
+  int64 SupplierId = 4;
+  int64 CategoryId = 5;
+  float Price = 6;
+  string CategoryName = 7;
+}
+
+message Package{
+  int64 Id = 1;
+  int64 Motor = 2;
+  int64 Battery = 3;
+  int64 Charger = 4;
+  int64 Rigging = 5;
+}
+
+message Section{
+  int64 Id = 1;
+  int64 CategoryId = 2;
+  string Specs = 3;
+  string Name =4;
+  string StartTime = 5;
+  string EndTime = 6;
+  float Price = 7;
+  string Detail = 8;
+  string CategoryName = 9;
+}
+
+message Supplier{
+  int64 Id = 1;
+  string Name = 2;
+  string Phone = 3;
+  string Email  = 4;
+  string Address = 5;
+}

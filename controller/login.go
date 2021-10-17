@@ -54,7 +54,7 @@ func GetCaptcha(ctx *gin.Context) {
 // @tags Login
 // @Accept  json
 // @Produce  json
-// @Param pbk,sign body login.UserInfo true "-"
+// @Param user_info body login.UserInfo true "-"
 // @Success 0 {object} model.JSONResult
 // @Header 200 {header} string
 // @Failure 4005 {object} model.JSONResult "The micro-service can't be reachable"
@@ -117,7 +117,7 @@ func Register(ctx *gin.Context) {
 // @tags Login
 // @Accept  json
 // @Produce  json
-// @Param pbk,sign body login.UserInfo true "-"
+// @Param user_info body login.UserInfo true "-"
 // @Success 0 {object} model.JSONResult
 // @Header 200 {header} string
 // @Failure 4005 {object} model.JSONResult "The micro-service can't be reachable"
@@ -178,7 +178,7 @@ func Update(ctx *gin.Context) {
 // @tags Login
 // @Accept  json
 // @Produce  json
-// @Param pbk,sign body login.UserInfo true "-"
+// @Param uid body login.UserInfo true "-"
 // @Success 0 {object} model.JSONResult
 // @Header 200 {header} string
 // @Failure 4005 {object} model.JSONResult "The micro-service can't be reachable"
@@ -222,5 +222,55 @@ func Query(ctx *gin.Context) {
 	resp.Data.LastName = remoteResult.LastName
 	resp.Data.Password = remoteResult.Password
 	resp.Data.AreaCode = remoteResult.AreaCode
+	resp.NewSuccess()
+}
+
+// Login godoc
+// @Summary login。
+// @Description When POST this API, the API will verify the captcha, email and password
+// @ID Login
+// @tags Login
+// @Accept  json
+// @Produce  json
+// @Param token body login.RegisterUser true "-"
+// @Success 0 {object} model.JSONResult
+// @Header 200 {header} string
+// @Failure 4005 {object} model.JSONResult "The micro-service can't be reachable"
+// @Failure 4125 {object} model.JSONResult "Generate the captcha failed"
+// @Router /login/login [post]
+func Login(ctx *gin.Context) {
+	var (
+		statusCode int
+		req        login.RegisterUser
+		resp       model.JSONResult
+	)
+	defer func() {
+		responseHTTP(ctx, statusCode, &resp)
+	}()
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		statusCode = http.StatusOK
+		resp.SetError(utils.RECODE_DATAERR, "the data may have some problem", err)
+		return
+	}
+
+	pbReq := &pbLogin.UserInfo{}
+	pbCaptcha := &pbLogin.Captcha{}
+	pbReq.Password = req.Password
+	pbReq.Email = req.Email
+	pbCaptcha.Id = req.Captcha.Id
+	pbCaptcha.Answer = req.Captcha.Answer
+	pbReq.Captcha = pbCaptcha
+	remoteResult, err := rpcLoginService.Register(context.TODO(), pbReq)
+	if err != nil {
+		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
+		statusCode = http.StatusBadRequest
+		return
+	} else if remoteResult.StatusCode != utils.RECODE_OK {
+		resp.SetError(remoteResult.StatusCode, utils.RecodeTest(remoteResult.StatusCode), err)
+		statusCode = http.StatusBadRequest
+		return
+	}
+	statusCode = http.StatusOK
 	resp.NewSuccess()
 }

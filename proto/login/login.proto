@@ -5,11 +5,11 @@ package login;
 option go_package = "./proto/login;pbLogin";
 
 service Login {
-
   rpc GenerateCaptcha(Empty)returns(Captcha){}
   rpc Register(UserInfo)returns(OperationResult){}
   rpc Update(UserInfo)returns(OperationResult){}
   rpc Query(UserInfo)returns(UserInfo){}
+  rpc Login(UserInfo)returns(OperationResult){}
 }
 
 message Empty{}
