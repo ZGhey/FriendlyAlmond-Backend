@@ -93,9 +93,14 @@ func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
 		r2.POST("/query-section", controller.QuerySection)
 	}
 
-	if middleWare != nil {
-		router.Use(middleWare)
+	r3 := router.Group("api/v1.0/order")
+	{
+		r3.POST("/create", controller.CreateOrder)
+		r3.POST("/query", controller.QueryOrder)
 	}
+	//if middleWare != nil {
+	//	router.Use(middleWare)
+	//}
 
 	return router
 }

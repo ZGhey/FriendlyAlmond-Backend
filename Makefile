@@ -3,7 +3,7 @@ ifeq (run,$(firstword $(MAKECMDGOALS)))
   $(eval $(RUN_ARGS):;@:)
 endif
 
-.PHONY: run proto build api login \
+.PHONY: run proto build api login configuration order \
 		docker_push docker_build docker_clean clean up down swag
 
 SHELL:=/bin/sh
@@ -38,9 +38,9 @@ proto:
 GO_LD_FLAGS= "-s -w -X FriendlyAlmond_backend/pkg/version.RELEASE=${RELEASE} -X FriendlyAlmond_backend/pkg/version.COMMIT=${GIT_COMMIT} -X FriendlyAlmond_backend/pkg/version.REPO=${GIT_REPO_INFO} -X FriendlyAlmond_backend/pkg/version.BUILDTIME=${DATETIME} -X FriendlyAlmond_backend/pkg/version.SERVICENAME=$@"
 CGO_SWITCH := 0
 
-build: api login
+build: api login configuration order
 
-api login:
+api login configuration order:
 	cd ${MKFILE_DIR} && \
 	CGO_ENABLED=${CGO_SWITCH} go build -v -trimpath -ldflags ${GO_LD_FLAGS} \
 	-o ${RELEASE_DIR}/$@ ${MKFILE_DIR}cmd/$@/

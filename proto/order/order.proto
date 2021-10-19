@@ -3,3 +3,38 @@ syntax = "proto3";
 package order;
 
 option go_package = "./proto/order;pbOrder";
+
+service Order{
+  rpc CreateOrder(OrderInfo)returns(OperateResult){}
+  rpc QueryOrder(OrderInfo)returns(ListQueryOrder){}
+}
+
+message ListQueryOrder{
+  string StatusCode = 1;
+  repeated QueryOrder QueryOrder = 2;
+}
+
+message QueryOrder{
+  string BoatName = 1;
+  string Color = 2;
+  string BoatmodelName = 3;
+  repeated string Options = 4;
+  float TotalPrice = 5;
+  string CategoryName = 6;
+  string Uid = 7;
+}
+
+message OrderInfo{
+  string BoatName = 1;
+  string Color = 2;
+  string BoatmodelName = 3;
+  repeated int32 SectionId = 4;
+  repeated int32 ComponentId = 5;
+  float TotalPrice = 6;
+  string CategoryName = 7;
+  string Uid = 8;
+}
+
+message OperateResult{
+  string StatusCode = 1;
+}

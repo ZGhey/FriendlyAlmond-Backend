@@ -23,6 +23,16 @@ services:
     volumes:
       - /root/data/log:/opt/fa/log
 
+    #configuration
+  configuration:
+    image: FriendlyAlmond/backend:1.0.1
+    container_name: configuration
+    restart: "no"
+    networks:
+      - fa_net
+    command: "configuration -f conf/configuration.yaml"
+    volumes:
+      - /root/data/log:/opt/fa/log
 networks:
   fa_net:
     external: true

@@ -3,6 +3,7 @@ package mysql
 import (
 	"FriendlyAlmond_backend/pkg/logger"
 	"FriendlyAlmond_backend/pkg/model/object/login"
+	"FriendlyAlmond_backend/pkg/model/object/order"
 	"FriendlyAlmond_backend/pkg/utils"
 	"gorm.io/gorm"
 )
@@ -26,5 +27,23 @@ func InitMyDB() error {
 		logger.Info(err)
 		return err
 	}
+
+	err = OrderDB.AutoMigrate(&order.Order{})
+	if err != nil {
+		logger.Info(err)
+		return err
+	}
+
+	err = OrderDB.AutoMigrate(&order.Section{})
+	if err != nil {
+		logger.Info(err)
+		return err
+	}
+	err = OrderDB.AutoMigrate(&order.Component{})
+	if err != nil {
+		logger.Info(err)
+		return err
+	}
+
 	return err
 }

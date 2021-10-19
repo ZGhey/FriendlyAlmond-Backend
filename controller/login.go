@@ -54,7 +54,7 @@ func GetCaptcha(ctx *gin.Context) {
 // @tags Login
 // @Accept  json
 // @Produce  json
-// @Param user_info body login.UserInfo true "-"
+// @Param token body login.RegisterUser true "-"
 // @Success 0 {object} model.JSONResult
 // @Header 200 {header} string
 // @Failure 4005 {object} model.JSONResult "The micro-service can't be reachable"
@@ -232,7 +232,8 @@ func Query(ctx *gin.Context) {
 // @tags Login
 // @Accept  json
 // @Produce  json
-// @Param token body login.RegisterUser true "-"
+// @Param RegisterUser body login.RegisterUser true "-"
+// @Param info body login.RegisterUser true "-"
 // @Success 0 {object} model.JSONResult
 // @Header 200 {header} string
 // @Failure 4005 {object} model.JSONResult "The micro-service can't be reachable"
@@ -261,7 +262,7 @@ func Login(ctx *gin.Context) {
 	pbCaptcha.Id = req.Captcha.Id
 	pbCaptcha.Answer = req.Captcha.Answer
 	pbReq.Captcha = pbCaptcha
-	remoteResult, err := rpcLoginService.Register(context.TODO(), pbReq)
+	remoteResult, err := rpcLoginService.Login(context.TODO(), pbReq)
 	if err != nil {
 		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
 		statusCode = http.StatusBadRequest
