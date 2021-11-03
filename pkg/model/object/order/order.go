@@ -25,10 +25,16 @@ type RespOrder struct {
 	BoatName      string   `json:"boat_name"`
 	Color         string   `json:"color"`
 	BoatmodelName string   `json:"boatmodel_name"`
+	SectionId     []int64  `json:"section_id"`
+	ComponentId   []int64  `json:"component_id"`
 	Options       []string `json:"options"`
 	TotalPrice    float32  `json:"total_price"`
 	CategoryName  string   `json:"category_name"`
 	Uid           string   `json:"uid"`
+	JobId         int32    `json:"job_id"`
+	OrderId       int32    `json:"order_id"`
+	UserName      string   `json:"user_name"`
+	OrderDate     string   `json:"order_date"`
 }
 
 type Order struct {
@@ -41,6 +47,7 @@ type Order struct {
 	Color       string    `json:"color" gorm:"not null"`
 	Created     time.Time `gorm:"autoCreateTime"`
 	Updated     time.Time `gorm:"autoUpdateTime"`
+	JobId       int32     `json:"job_id" gorm:"not null"`
 }
 
 func (Order) TableName() string {

@@ -3,7 +3,7 @@ ifeq (run,$(firstword $(MAKECMDGOALS)))
   $(eval $(RUN_ARGS):;@:)
 endif
 
-.PHONY: run proto build api login configuration order \
+.PHONY: run proto build api login configuration order jobModule \
 		docker_push docker_build docker_clean clean up down swag
 
 SHELL:=/bin/sh
@@ -38,9 +38,9 @@ proto:
 GO_LD_FLAGS= "-s -w -X FriendlyAlmond_backend/pkg/version.RELEASE=${RELEASE} -X FriendlyAlmond_backend/pkg/version.COMMIT=${GIT_COMMIT} -X FriendlyAlmond_backend/pkg/version.REPO=${GIT_REPO_INFO} -X FriendlyAlmond_backend/pkg/version.BUILDTIME=${DATETIME} -X FriendlyAlmond_backend/pkg/version.SERVICENAME=$@"
 CGO_SWITCH := 0
 
-build: api login configuration order
+build: api login configuration order jobModule
 
-api login configuration order:
+api login configuration order jobModule:
 	cd ${MKFILE_DIR} && \
 	CGO_ENABLED=${CGO_SWITCH} go build -v -trimpath -ldflags ${GO_LD_FLAGS} \
 	-o ${RELEASE_DIR}/$@ ${MKFILE_DIR}cmd/$@/
@@ -59,15 +59,14 @@ clean:
 	@rm -f ${MKFILE_DIR}bin/*
 
 up:
-	docker-compose -f deployment/docker-compose-local.yaml up -d
+	docker-compose -f deploy/docker-compose-local.yaml up -d
 
 down:
-	docker-compose -f deployment/docker-compose-local.yaml down
+	docker-compose -f deploy/docker-compose-local.yaml down
 
 
 swag:  #It will too slow now, being patient, it works.
 	@rm -f cmd/api/docs/swagger.*
-	#swag init --dir cmd/api/ --output cmd/api/docs --parseDepth 2 --parseDependency
 	swag init --dir cmd/api/ --output cmd/api/docs --parseDepth 2 --parseDependency
 
 run:

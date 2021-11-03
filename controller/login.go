@@ -4,6 +4,7 @@ import (
 	"FriendlyAlmond_backend/pkg/model"
 	"FriendlyAlmond_backend/pkg/model/object/login"
 	"FriendlyAlmond_backend/pkg/utils"
+	pbJobModule "FriendlyAlmond_backend/proto/jobModule"
 	pbLogin "FriendlyAlmond_backend/proto/login"
 	"context"
 	"github.com/gin-gonic/gin"
@@ -233,17 +234,16 @@ func Query(ctx *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param RegisterUser body login.RegisterUser true "-"
-// @Param info body login.RegisterUser true "-"
-// @Success 0 {object} model.JSONResult
+// @Success 0 {object} login.RespUser
 // @Header 200 {header} string
-// @Failure 4005 {object} model.JSONResult "The micro-service can't be reachable"
-// @Failure 4125 {object} model.JSONResult "Generate the captcha failed"
+// @Failure 4005 {object} login.RespUser "The micro-service can't be reachable"
+// @Failure 4125 {object} login.RespUser "Generate the captcha failed"
 // @Router /login/login [post]
 func Login(ctx *gin.Context) {
 	var (
 		statusCode int
 		req        login.RegisterUser
-		resp       model.JSONResult
+		resp       login.RespUser
 	)
 	defer func() {
 		responseHTTP(ctx, statusCode, &resp)
@@ -252,6 +252,40 @@ func Login(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		statusCode = http.StatusOK
 		resp.SetError(utils.RECODE_DATAERR, "the data may have some problem", err)
+		return
+	}
+
+	if result := utils.IsEmailValid(req.Email); !result {
+		pbReq := &pbJobModule.Staff{}
+		pbCaptcha := &pbJobModule.Captcha{}
+		pbReq.Password = req.Password
+		pbReq.Account = req.Email
+		pbCaptcha.Id = req.Captcha.Id
+		pbCaptcha.Answer = req.Captcha.Answer
+		pbReq.Captcha = pbCaptcha
+		remoteResult, err := rpcJobModuleService.Login(context.TODO(), pbReq)
+		if err != nil {
+			resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
+			statusCode = http.StatusBadRequest
+			return
+		} else if remoteResult.OperationResult.StatusCode != utils.RECODE_OK {
+			resp.SetError(remoteResult.OperationResult.StatusCode, utils.RecodeTest(remoteResult.OperationResult.StatusCode), err)
+			statusCode = http.StatusBadRequest
+			return
+		}
+		statusCode = http.StatusOK
+		resp.NewSuccess()
+		resp.Data.IsAdmin = true
+		resp.Data.Address = remoteResult.Address
+		resp.Data.AreaCode = remoteResult.AreaCode
+		resp.Data.Phone = remoteResult.Phone
+		resp.Data.Email = remoteResult.Email
+		resp.Data.StaffId = remoteResult.StaffId
+		resp.Data.Password = remoteResult.Password
+		resp.Data.FirstName = remoteResult.Firstname
+		resp.Data.LastName = remoteResult.Lastname
+		resp.Data.MiddleName = remoteResult.Middlename
+		resp.Data.Skill = remoteResult.Skill
 		return
 	}
 
@@ -267,11 +301,22 @@ func Login(ctx *gin.Context) {
 		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
 		statusCode = http.StatusBadRequest
 		return
-	} else if remoteResult.StatusCode != utils.RECODE_OK {
-		resp.SetError(remoteResult.StatusCode, utils.RecodeTest(remoteResult.StatusCode), err)
+	} else if remoteResult.OperationResult.StatusCode != utils.RECODE_OK {
+		resp.SetError(remoteResult.OperationResult.StatusCode, utils.RecodeTest(remoteResult.OperationResult.StatusCode), err)
 		statusCode = http.StatusBadRequest
 		return
 	}
 	statusCode = http.StatusOK
 	resp.NewSuccess()
+	resp.Data.IsAdmin = false
+	resp.Data.Uid = remoteResult.Uid
+	resp.Data.FirstName = remoteResult.FirstName
+	resp.Data.Password = remoteResult.Password
+	resp.Data.Email = remoteResult.Email
+	resp.Data.Uid = remoteResult.Uid
+	resp.Data.Phone = remoteResult.Phone
+	resp.Data.Address = remoteResult.Address
+	resp.Data.MiddleName = remoteResult.MiddleName
+	resp.Data.LastName = remoteResult.LastName
+	resp.Data.AreaCode = remoteResult.AreaCode
 }

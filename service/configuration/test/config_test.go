@@ -27,3 +27,16 @@ func TestQueryComponent(t *testing.T) {
 		return
 	}
 }
+
+func TestQueryComponentById(t *testing.T) {
+	info := new(pbConfig.Section)
+	info.Id = 1
+	p := &handler.Config{}
+	result := new(pbConfig.Section)
+	for i := 0; i < 10; i++ {
+		err := p.QuerySectionById(context.Background(), info, result)
+		if err != nil {
+			return
+		}
+	}
+}

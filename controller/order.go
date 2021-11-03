@@ -46,7 +46,7 @@ func CreateOrder(ctx *gin.Context) {
 	pbOrderInfo.TotalPrice = req.TotalPrice
 	pbOrderInfo.SectionId = req.SectionId
 	pbOrderInfo.ComponentId = req.ComponentId
-	result, err := rpcOrder.CreateOrder(context.TODO(), &pbOrderInfo)
+	result, err := rpcOrderService.CreateOrder(context.TODO(), &pbOrderInfo)
 	if err != nil {
 		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
 		statusCode = http.StatusBadRequest
@@ -62,7 +62,7 @@ func CreateOrder(ctx *gin.Context) {
 }
 
 // QueryOrder godoc
-// @Summary create order data。
+// @Summary query order data。
 // @Description When post this API, the API will return the order details via uid
 // @ID QueryOrder
 // @tags Order
@@ -89,8 +89,10 @@ func QueryOrder(ctx *gin.Context) {
 		resp.SetError(utils.RECODE_DATAERR, utils.RecodeTest(utils.RECODE_DATAERR), err)
 		statusCode = http.StatusBadRequest
 	}
-	pbOrderInfo.Uid = req.Uid
-	result, err := rpcOrder.QueryOrder(context.TODO(), &pbOrderInfo)
+	if req.Uid != "" {
+		pbOrderInfo.Uid = req.Uid
+	}
+	result, err := rpcOrderService.QueryOrder(context.TODO(), &pbOrderInfo)
 	if err != nil {
 		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
 		statusCode = http.StatusBadRequest

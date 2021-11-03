@@ -5,6 +5,7 @@ import (
 	baseModel "FriendlyAlmond_backend/pkg/model"
 	"FriendlyAlmond_backend/pkg/model/consulreg"
 	pbConfig "FriendlyAlmond_backend/proto/configuration"
+	pbJobModule "FriendlyAlmond_backend/proto/jobModule"
 	pbLogin "FriendlyAlmond_backend/proto/login"
 	pbOrder "FriendlyAlmond_backend/proto/order"
 	"github.com/gin-gonic/gin"
@@ -25,13 +26,15 @@ func responseHTTP(ctx *gin.Context, statusCode int, data jsonResult) {
 }
 
 var (
-	rpcLoginService  pbLogin.LoginService
-	rpcConfigService pbConfig.ConfigurationService
-	rpcOrder         pbOrder.OrderService
+	rpcLoginService     pbLogin.LoginService
+	rpcConfigService    pbConfig.ConfigurationService
+	rpcOrderService     pbOrder.OrderService
+	rpcJobModuleService pbJobModule.JobModuleService
 )
 
 func InitRpcCaller() {
 	rpcLoginService = pbLogin.NewLoginService("login", consulreg.MicroSer.Client())
 	rpcConfigService = pbConfig.NewConfigurationService("configuration", consulreg.MicroSer.Client())
-	rpcOrder = pbOrder.NewOrderService("order", consulreg.MicroSer.Client())
+	rpcOrderService = pbOrder.NewOrderService("order", consulreg.MicroSer.Client())
+	rpcJobModuleService = pbJobModule.NewJobModuleService("job_module", consulreg.MicroSer.Client())
 }

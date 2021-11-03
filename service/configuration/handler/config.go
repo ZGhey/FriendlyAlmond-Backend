@@ -7,10 +7,61 @@ import (
 	"FriendlyAlmond_backend/pkg/utils"
 	pbConfig "FriendlyAlmond_backend/proto/configuration"
 	"context"
+	"encoding/json"
 	"strconv"
 )
 
 type Config struct{}
+
+func (c Config) QuerySecById(ctx context.Context, req *pbConfig.Section, resp *pbConfig.Section) error {
+	var (
+		sections config.Section
+	)
+	defer func() {
+		logger.Infof("calling QuerySecById success, req=%+v, resp=%+v", req, resp)
+	}()
+	if sectionResult := mysql.ConfigBoatDB.First(&sections, "id = ?", req.Id); sectionResult.Error != nil {
+		logger.Error(sectionResult.Error)
+		resp.StatusCode = utils.RECODE_DBERR
+		return nil
+	}
+	marshal, err := json.Marshal(&sections)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(marshal, resp)
+	if err != nil {
+		return err
+	}
+	resp.StatusCode = utils.RECODE_OK
+	return nil
+
+}
+
+func (c Config) GetComById(ctx context.Context, req *pbConfig.Component, resp *pbConfig.Component) error {
+	var (
+		component config.Component
+	)
+	defer func() {
+		logger.Infof("calling QueryComById success, req=%+v, resp=%+v", req, resp)
+	}()
+	if componentResult := mysql.ConfigBoatDB.First(&component, "id = ?", req.Id); componentResult.Error != nil {
+		logger.Error(componentResult.Error)
+		resp.StatusCode = utils.RECODE_DBERR
+
+		return nil
+	}
+	marshal, err := json.Marshal(&component)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(marshal, resp)
+	if err != nil {
+		return err
+	}
+	resp.StatusCode = utils.RECODE_OK
+	return nil
+}
 
 func (c Config) QueryBoat(ctx context.Context, req *pbConfig.Empty, resp *pbConfig.ListBoat) error {
 	defer func() {
@@ -40,6 +91,7 @@ func (c Config) QueryCategory(ctx context.Context, req *pbConfig.Boat, resp *pbC
 	panic("implement me")
 }
 
+//QueryComponent get the boat component from database via pbConfig.Category, it will require a type like motor
 func (c Config) QueryComponent(ctx context.Context, req *pbConfig.Category, resp *pbConfig.ListComponent) error {
 	var (
 		categories []config.Category

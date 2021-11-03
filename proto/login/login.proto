@@ -9,7 +9,7 @@ service Login {
   rpc Register(UserInfo)returns(OperationResult){}
   rpc Update(UserInfo)returns(OperationResult){}
   rpc Query(UserInfo)returns(UserInfo){}
-  rpc Login(UserInfo)returns(OperationResult){}
+  rpc Login(UserInfo)returns(UserInfo){}
 }
 
 message Empty{}

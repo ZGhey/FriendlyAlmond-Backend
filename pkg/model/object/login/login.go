@@ -24,6 +24,11 @@ type QueryUser struct {
 type UpdateUser struct {
 	UserInfo
 }
+type RespUser struct {
+	model.JSONResult
+	Data UserInfo `json:"data"`
+}
+
 type UserInfo struct {
 	FirstName  string `json:"first_name" gorm:"not null"`
 	LastName   string `json:"last_name" gorm:"not null"`
@@ -36,4 +41,7 @@ type UserInfo struct {
 	Phone      string `json:"phone"`
 	Address    string `json:"address"`
 	AreaCode   string `gorm:"not null;" json:"area_code"`
+	IsAdmin    bool   `json:"is_admin"`
+	StaffId    int32  `json:"staff_id"`
+	Skill      string `json:"skill"`
 }

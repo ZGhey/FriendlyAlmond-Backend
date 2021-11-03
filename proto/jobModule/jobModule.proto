@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package jobModule;
+
+option go_package = "./proto/jobModule;pbJobModule";
+
+service JobModule {
+  rpc Login(Staff)returns(Staff);
+  rpc UpdateStaff(Staff)returns(OperationResult);
+  rpc AddStaff(Staff)returns(OperationResult);
+  rpc QueryListStaff(Empty)returns(ListStaff);
+  rpc QueryListUser(Empty)returns(ListUser);
+  rpc QueryNoJobOrder(Empty)returns(ListQueryOrder);
+  rpc CreateJob(Job)returns(OperationResult);
+  rpc CreateTask(Task)returns(OperationResult);
+  rpc QueryTask(Task)returns(ListTask);
+}
+
+message Empty{}
+
+message Captcha{
+  string Id = 1;
+  string Image = 2;
+  string Answer = 3;
+  string StatusCode = 4;
+}
+
+message ListStaff{
+  string statusCode = 1;
+  repeated Staff staff = 2;
+}
+
+message Staff{
+  int32 staffId = 1;
+  string account = 2;
+  string password = 3;
+  string firstname = 4;
+  string lastname = 5;
+  string middlename = 6;
+  string email = 7;
+  string address = 8;
+  string phone = 9;
+  string skill = 10;
+  string areaCode = 11;
+  Captcha Captcha = 12;
+  OperationResult OperationResult = 13;
+}
+message OperationResult{
+  string statusCode = 1;
+}
+
+message ListUser{
+  string statusCode = 1;
+  repeated UserInfo UserInfo = 2;
+}
+message UserInfo{
+  string FirstName = 1;
+  string Password = 2;
+  string Email = 3;
+  string Uid = 4;
+  string Phone = 5;
+  string Address = 6;
+  string MiddleName = 9;
+  string LastName = 10;
+  string AreaCode = 11;
+}
+
+message ListQueryOrder{
+  string StatusCode = 1;
+  repeated QueryOrder QueryOrder = 2;
+}
+
+message QueryOrder{
+  string BoatName = 1;
+  string Color = 2;
+  string BoatmodelName = 3;
+  repeated int64 SectionId = 4;
+  float TotalPrice = 5;
+  string CategoryName = 6;
+  string UserName = 7;
+  int32 OrderId = 8;
+  string OrderDate = 9;
+  repeated int64 ComponentId = 10;
+}
+
+message Job{
+  string JobId = 1;
+  int32 OrderId = 2;
+}
+
+message ListTask{
+  string StatusCode = 1;
+  repeated Task Task = 2;
+}
+
+message Task{
+  int32 TaskId = 1;
+  int32 JobId = 2;
+  string Description = 3;
+  int32 SectionId = 4;
+  string SectionName = 5;
+  int32 ComponentId = 6;
+  string StartDate = 8;
+  string DueDate = 9;
+  int32 StaffId = 10;
+}

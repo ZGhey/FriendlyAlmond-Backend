@@ -40,7 +40,7 @@ type LoginService interface {
 	Register(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*OperationResult, error)
 	Update(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*OperationResult, error)
 	Query(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*UserInfo, error)
-	Login(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*OperationResult, error)
+	Login(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*UserInfo, error)
 }
 
 type loginService struct {
@@ -95,9 +95,9 @@ func (c *loginService) Query(ctx context.Context, in *UserInfo, opts ...client.C
 	return out, nil
 }
 
-func (c *loginService) Login(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*OperationResult, error) {
+func (c *loginService) Login(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*UserInfo, error) {
 	req := c.c.NewRequest(c.name, "Login.Login", in)
-	out := new(OperationResult)
+	out := new(UserInfo)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ type LoginHandler interface {
 	Register(context.Context, *UserInfo, *OperationResult) error
 	Update(context.Context, *UserInfo, *OperationResult) error
 	Query(context.Context, *UserInfo, *UserInfo) error
-	Login(context.Context, *UserInfo, *OperationResult) error
+	Login(context.Context, *UserInfo, *UserInfo) error
 }
 
 func RegisterLoginHandler(s server.Server, hdlr LoginHandler, opts ...server.HandlerOption) error {
@@ -121,7 +121,7 @@ func RegisterLoginHandler(s server.Server, hdlr LoginHandler, opts ...server.Han
 		Register(ctx context.Context, in *UserInfo, out *OperationResult) error
 		Update(ctx context.Context, in *UserInfo, out *OperationResult) error
 		Query(ctx context.Context, in *UserInfo, out *UserInfo) error
-		Login(ctx context.Context, in *UserInfo, out *OperationResult) error
+		Login(ctx context.Context, in *UserInfo, out *UserInfo) error
 	}
 	type Login struct {
 		login
@@ -150,6 +150,6 @@ func (h *loginHandler) Query(ctx context.Context, in *UserInfo, out *UserInfo) e
 	return h.LoginHandler.Query(ctx, in, out)
 }
 
-func (h *loginHandler) Login(ctx context.Context, in *UserInfo, out *OperationResult) error {
+func (h *loginHandler) Login(ctx context.Context, in *UserInfo, out *UserInfo) error {
 	return h.LoginHandler.Login(ctx, in, out)
 }

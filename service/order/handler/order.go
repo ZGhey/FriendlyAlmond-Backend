@@ -13,6 +13,7 @@ import (
 type Order struct {
 }
 
+//QueryOrder query order by uid, it will respond a list of order
 func (o Order) QueryOrder(ctx context.Context, req *pbOrder.OrderInfo, resp *pbOrder.ListQueryOrder) error {
 	var (
 		orderData      []order.Order
@@ -24,11 +25,21 @@ func (o Order) QueryOrder(ctx context.Context, req *pbOrder.OrderInfo, resp *pbO
 	defer func() {
 		logger.Infof("calling QueryOrder success, req=%+v, resp=%+v", req, resp)
 	}()
-	if result := mysql.OrderDB.Where("uid = ?", req.Uid).Find(&orderData); result.Error != nil {
-		logger.Error("the data is not exists in the database" + req.BoatmodelName)
-		logger.Error(result.Error)
-		resp.StatusCode = utils.RECODE_DATAINEXISTENCE
-		return nil
+
+	if req.Uid == "" {
+		if result := mysql.OrderDB.Order("created desc").Find(&orderData); result.Error != nil {
+			logger.Error("the data is not exists in the database")
+			logger.Error(result.Error)
+			resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+			return nil
+		}
+	} else {
+		if result := mysql.OrderDB.Where("uid = ?", req.Uid).Order("created desc").Find(&orderData); result.Error != nil {
+			logger.Error("the data is not exists in the database" + req.BoatmodelName)
+			logger.Error(result.Error)
+			resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+			return nil
+		}
 	}
 
 	for _, value := range orderData {
@@ -37,6 +48,8 @@ func (o Order) QueryOrder(ctx context.Context, req *pbOrder.OrderInfo, resp *pbO
 		pbQueryOrder.BoatName = value.BoatName
 		pbQueryOrder.Uid = value.Uid
 		pbQueryOrder.TotalPrice = value.TotalPrice
+		pbQueryOrder.OrderId = value.OrderId
+		pbQueryOrder.JobId = value.JobId
 		if result := mysql.ConfigBoatDB.Where("id = ?", value.BoatmodelId).Find(&boatmodel); result.Error != nil {
 			logger.Error(result.Error)
 			resp.StatusCode = utils.RECODE_DATAINEXISTENCE
@@ -90,6 +103,7 @@ func (o Order) QueryOrder(ctx context.Context, req *pbOrder.OrderInfo, resp *pbO
 	return nil
 }
 
+//CreateOrder based on the order info like component or section, this method will create an order to the database
 func (o Order) CreateOrder(ctx context.Context, req *pbOrder.OrderInfo, resp *pbOrder.OperateResult) error {
 	var (
 		orderData      order.Order

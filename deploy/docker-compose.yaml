@@ -33,6 +33,17 @@ services:
     command: "configuration -f conf/configuration.yaml"
     volumes:
       - /root/data/log:/opt/fa/log
+
+    #jobModule
+  fa_job:
+    image: FriendlyAlmond/backend:1.0.1
+    container_name: fa_job
+    restart: "no"
+    networks:
+      - fa_net
+    command: "job -f conf/job_module.yaml"
+    volumes:
+      - /root/data/log:/opt/fa/log
 networks:
   fa_net:
     external: true

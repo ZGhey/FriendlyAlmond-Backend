@@ -19,7 +19,7 @@ func CaptMake() (id, b64s string, err error) {
 		Height:          60,
 		Width:           200,
 		NoiseCount:      0,
-		ShowLineOptions: 1 | 5,
+		ShowLineOptions: 5 | 10,
 		Length:          4,
 		Source:          "1234567890qwertyuioplkjhgfdsazxcvbnm",
 		BgColor: &color.RGBA{

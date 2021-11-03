@@ -15,7 +15,10 @@ type RespSection struct {
 	CategoryName string    `json:"category_name"`
 	Data         []Section `json:"data"`
 }
-
+type RespSectionId struct {
+	model.JSONResult
+	Data Section `json:"data"`
+}
 type Section struct {
 	Id         int64     `json:"id" gorm:"not null;unique;primaryKey;autoIncrement"`
 	CategoryId int64     `json:"category_id" gorm:"not null"`

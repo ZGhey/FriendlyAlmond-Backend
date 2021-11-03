@@ -37,7 +37,7 @@ var recodeText = map[string]string{
 
 	//token and login
 	RECODE_TOKENERR:     "verify the token failed",
-	RECODE_LOGINERR:     "the email or password is not correct",
+	RECODE_LOGINERR:     "the account or password is not correct",
 	RECODE_TOKENEXPIRED: "the token is expired",
 
 	//captcha

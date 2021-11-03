@@ -15,6 +15,11 @@ type RespComponent struct {
 	Data         []Component `json:"data"`
 }
 
+type RespComponentId struct {
+	model.JSONResult
+	Data Component `json:"data"`
+}
+
 type Component struct {
 	Id         int64   `json:"id" gorm:"not null;unique;primaryKey;autoIncrement"`
 	Name       string  `json:"name" gorm:"not null"`

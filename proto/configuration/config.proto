@@ -11,8 +11,11 @@ service Configuration{
   rpc QueryPackage(Empty)returns(ListPackage){}
   rpc QuerySection(Category)returns(ListSection){}
   rpc QuerySupplier(Empty)returns(ListSupplier){}
+  rpc QuerySecById(Section)returns(Section){}
+  rpc GetComById(Component)returns(Component){}
 }
 message Empty{}
+
 message ListBoat{
   string StatusCode = 1;
   repeated Boat Data = 2;
@@ -66,6 +69,7 @@ message Component{
   int64 CategoryId = 5;
   float Price = 6;
   string CategoryName = 7;
+  string StatusCode = 8;
 }
 
 message Package{
@@ -77,21 +81,26 @@ message Package{
 }
 
 message Section{
-  int64 Id = 1;
-  int64 CategoryId = 2;
-  string Specs = 3;
-  string Name =4;
-  string StartTime = 5;
-  string EndTime = 6;
-  float Price = 7;
-  string Detail = 8;
-  string CategoryName = 9;
+  int64 id = 1;
+  int64 categoryId = 2;
+  string specs = 3;
+  string name =4;
+  string startTime = 5;
+  string endTime = 6;
+  float price = 7;
+  string detail = 8;
+  string categoryName = 9;
+  string statusCode = 10;
 }
 
 message Supplier{
-  int64 Id = 1;
-  string Name = 2;
-  string Phone = 3;
-  string Email  = 4;
-  string Address = 5;
+  int64 id = 1;
+  string name = 2;
+  string phone = 3;
+  string email  = 4;
+  string address = 5;
+}
+
+message OperateResult{
+  string statusCode = 1;
 }

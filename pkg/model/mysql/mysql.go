@@ -29,12 +29,7 @@ func setConnect(url string) (*gorm.DB, error) {
 	}
 
 	sqlDb, err := db.DB()
-	//defer func(sqlDb *sql.DB) {
-	//	err := sqlDb.Close()
-	//	if err != nil {
-	//		logger.Fatal(err)
-	//	}
-	//}(sqlDb)
+
 	if err != nil {
 		return nil, err
 	}

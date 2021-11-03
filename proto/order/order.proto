@@ -22,6 +22,8 @@ message QueryOrder{
   float TotalPrice = 5;
   string CategoryName = 6;
   string Uid = 7;
+  int32 OrderId = 8;
+  int32 JobId = 9;
 }
 
 message OrderInfo{
@@ -33,6 +35,8 @@ message OrderInfo{
   float TotalPrice = 6;
   string CategoryName = 7;
   string Uid = 8;
+  int32 OrderId = 9;
+  int32 JobId = 10;
 }
 
 message OperateResult{

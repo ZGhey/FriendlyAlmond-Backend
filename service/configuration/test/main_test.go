@@ -22,7 +22,7 @@ mysql:
   user: root:friendly_almond_database@tcp(47.74.85.143:3306)/user?charset=utf8mb4&parseTime=True&loc=Local
   config_boat: root:friendly_almond_database@tcp(47.74.85.143:3306)/config_boat?charset=utf8mb4&parseTime=True&loc=Local
   order: root:friendly_almond_database@tcp(47.74.85.143:3306)/order?charset=utf8mb4&parseTime=True&loc=Local
-  staff: root:friendly_almond_database@tcp(47.74.85.143:3306)/staff?charset=utf8mb4&parseTime=True&loc=Local
+  job_module: root:friendly_almond_database@tcp(47.74.85.143:3306)/job_module?charset=utf8mb4&parseTime=True&loc=Local
   max_idle_conns: 10
   max_open_conns: 100
   conn_max_lifetime: 60 #second
