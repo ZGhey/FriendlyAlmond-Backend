@@ -45,6 +45,8 @@ type JobModuleService interface {
 	CreateJob(ctx context.Context, in *Job, opts ...client.CallOption) (*OperationResult, error)
 	CreateTask(ctx context.Context, in *Task, opts ...client.CallOption) (*OperationResult, error)
 	QueryTask(ctx context.Context, in *Task, opts ...client.CallOption) (*ListTask, error)
+	QueryMostPopular(ctx context.Context, in *Empty, opts ...client.CallOption) (*MostPopular, error)
+	QueryTotalSales(ctx context.Context, in *Empty, opts ...client.CallOption) (*TotalSales, error)
 }
 
 type jobModuleService struct {
@@ -149,6 +151,26 @@ func (c *jobModuleService) QueryTask(ctx context.Context, in *Task, opts ...clie
 	return out, nil
 }
 
+func (c *jobModuleService) QueryMostPopular(ctx context.Context, in *Empty, opts ...client.CallOption) (*MostPopular, error) {
+	req := c.c.NewRequest(c.name, "JobModule.QueryMostPopular", in)
+	out := new(MostPopular)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *jobModuleService) QueryTotalSales(ctx context.Context, in *Empty, opts ...client.CallOption) (*TotalSales, error) {
+	req := c.c.NewRequest(c.name, "JobModule.QueryTotalSales", in)
+	out := new(TotalSales)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for JobModule service
 
 type JobModuleHandler interface {
@@ -161,6 +183,8 @@ type JobModuleHandler interface {
 	CreateJob(context.Context, *Job, *OperationResult) error
 	CreateTask(context.Context, *Task, *OperationResult) error
 	QueryTask(context.Context, *Task, *ListTask) error
+	QueryMostPopular(context.Context, *Empty, *MostPopular) error
+	QueryTotalSales(context.Context, *Empty, *TotalSales) error
 }
 
 func RegisterJobModuleHandler(s server.Server, hdlr JobModuleHandler, opts ...server.HandlerOption) error {
@@ -174,6 +198,8 @@ func RegisterJobModuleHandler(s server.Server, hdlr JobModuleHandler, opts ...se
 		CreateJob(ctx context.Context, in *Job, out *OperationResult) error
 		CreateTask(ctx context.Context, in *Task, out *OperationResult) error
 		QueryTask(ctx context.Context, in *Task, out *ListTask) error
+		QueryMostPopular(ctx context.Context, in *Empty, out *MostPopular) error
+		QueryTotalSales(ctx context.Context, in *Empty, out *TotalSales) error
 	}
 	type JobModule struct {
 		jobModule
@@ -220,4 +246,12 @@ func (h *jobModuleHandler) CreateTask(ctx context.Context, in *Task, out *Operat
 
 func (h *jobModuleHandler) QueryTask(ctx context.Context, in *Task, out *ListTask) error {
 	return h.JobModuleHandler.QueryTask(ctx, in, out)
+}
+
+func (h *jobModuleHandler) QueryMostPopular(ctx context.Context, in *Empty, out *MostPopular) error {
+	return h.JobModuleHandler.QueryMostPopular(ctx, in, out)
+}
+
+func (h *jobModuleHandler) QueryTotalSales(ctx context.Context, in *Empty, out *TotalSales) error {
+	return h.JobModuleHandler.QueryTotalSales(ctx, in, out)
 }

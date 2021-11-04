@@ -10,6 +10,7 @@ service Login {
   rpc Update(UserInfo)returns(OperationResult){}
   rpc Query(UserInfo)returns(UserInfo){}
   rpc Login(UserInfo)returns(UserInfo){}
+  rpc IsSameEmail(UserInfo)returns(OperationResult){}
 }
 
 message Empty{}

@@ -7,57 +7,61 @@ import (
 	"FriendlyAlmond_backend/pkg/utils"
 	pbConfig "FriendlyAlmond_backend/proto/configuration"
 	"context"
-	"encoding/json"
 	"strconv"
 )
 
 type Config struct{}
 
-func (c Config) QuerySecById(ctx context.Context, req *pbConfig.Section, resp *pbConfig.Section) error {
+func (c Config) QuerySecById(ctx context.Context, req *pbConfig.ListId, resp *pbConfig.ListSection) error {
 	var (
-		sections config.Section
+		sections []config.Section
 	)
 	defer func() {
 		logger.Infof("calling QuerySecById success, req=%+v, resp=%+v", req, resp)
 	}()
-	if sectionResult := mysql.ConfigBoatDB.First(&sections, "id = ?", req.Id); sectionResult.Error != nil {
+	if sectionResult := mysql.ConfigBoatDB.Where("id in ?", req.Id).Find(&sections); sectionResult.Error != nil {
 		logger.Error(sectionResult.Error)
 		resp.StatusCode = utils.RECODE_DBERR
 		return nil
 	}
-	marshal, err := json.Marshal(&sections)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(marshal, resp)
-	if err != nil {
-		return err
+	for _, value := range sections {
+		pbSec := new(pbConfig.Section)
+		pbSec.Id = value.Id
+		pbSec.CategoryId = value.Id
+		pbSec.Name = value.Name
+		pbSec.Specs = value.Specs
+		//pbSec.StartTime = value.StartTime.String()
+		//pbSec.EndTime = value.EndTime.String()
+		pbSec.Price = value.Price
+		pbSec.Detail = value.Detail
+		resp.Data = append(resp.Data, pbSec)
 	}
 	resp.StatusCode = utils.RECODE_OK
 	return nil
 
 }
 
-func (c Config) GetComById(ctx context.Context, req *pbConfig.Component, resp *pbConfig.Component) error {
+func (c Config) QueryComById(ctx context.Context, req *pbConfig.ListId, resp *pbConfig.ListComponent) error {
 	var (
-		component config.Component
+		components []config.Component
 	)
 	defer func() {
 		logger.Infof("calling QueryComById success, req=%+v, resp=%+v", req, resp)
 	}()
-	if componentResult := mysql.ConfigBoatDB.First(&component, "id = ?", req.Id); componentResult.Error != nil {
+	if componentResult := mysql.ConfigBoatDB.Where("id in ?", req.Id).Find(&components); componentResult.Error != nil {
 		logger.Error(componentResult.Error)
 		resp.StatusCode = utils.RECODE_DBERR
-
 		return nil
 	}
-	marshal, err := json.Marshal(&component)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(marshal, resp)
-	if err != nil {
-		return err
+	for _, value := range components {
+		pbCom := new(pbConfig.Component)
+		pbCom.Id = value.Id
+		pbCom.Name = value.Name
+		pbCom.Details = value.Details
+		pbCom.SupplierId = value.SupplierId
+		pbCom.CategoryId = value.CategoryId
+		pbCom.Price = value.Price
+		resp.Data = append(resp.Data, pbCom)
 	}
 	resp.StatusCode = utils.RECODE_OK
 	return nil

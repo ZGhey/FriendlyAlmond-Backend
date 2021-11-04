@@ -24,6 +24,8 @@ message QueryOrder{
   string Uid = 7;
   int32 OrderId = 8;
   int32 JobId = 9;
+  string OrderDate = 10;
+  string UserName = 11;
 }
 
 message OrderInfo{

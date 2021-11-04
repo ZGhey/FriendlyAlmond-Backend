@@ -14,6 +14,8 @@ service JobModule {
   rpc CreateJob(Job)returns(OperationResult);
   rpc CreateTask(Task)returns(OperationResult);
   rpc QueryTask(Task)returns(ListTask);
+  rpc QueryMostPopular(Empty)returns(MostPopular);
+  rpc QueryTotalSales(Empty)returns(TotalSales);
 }
 
 message Empty{}
@@ -103,4 +105,32 @@ message Task{
   string StartDate = 8;
   string DueDate = 9;
   int32 StaffId = 10;
+}
+
+message MostPopular{
+  repeated Color Colors = 1;
+  repeated Section Sections = 2;
+  repeated Component Components = 3;
+  string StatusCode = 4;
+}
+
+message Color{
+  string Color = 1;
+  int32 Total = 2;
+}
+message Section{
+  string Section = 1;
+  int32  Total = 2;
+}
+message Component{
+  string Component = 1;
+  int32  Total = 2;
+}
+
+message TotalSales{
+  float LastOneMonth = 1 [json_name = "last_one_month"];
+  float LastThreeMonth = 2 [json_name = "last_three_month"];
+  float LastSixMonth = 3 [json_name = "last_six_month"];
+  float LastOneYear = 4 [json_name = "last_onw_year"];
+  string StatusCode = 5;
 }

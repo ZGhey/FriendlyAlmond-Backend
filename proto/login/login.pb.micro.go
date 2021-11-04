@@ -41,6 +41,7 @@ type LoginService interface {
 	Update(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*OperationResult, error)
 	Query(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*UserInfo, error)
 	Login(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*UserInfo, error)
+	IsSameEmail(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*OperationResult, error)
 }
 
 type loginService struct {
@@ -105,6 +106,16 @@ func (c *loginService) Login(ctx context.Context, in *UserInfo, opts ...client.C
 	return out, nil
 }
 
+func (c *loginService) IsSameEmail(ctx context.Context, in *UserInfo, opts ...client.CallOption) (*OperationResult, error) {
+	req := c.c.NewRequest(c.name, "Login.IsSameEmail", in)
+	out := new(OperationResult)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Login service
 
 type LoginHandler interface {
@@ -113,6 +124,7 @@ type LoginHandler interface {
 	Update(context.Context, *UserInfo, *OperationResult) error
 	Query(context.Context, *UserInfo, *UserInfo) error
 	Login(context.Context, *UserInfo, *UserInfo) error
+	IsSameEmail(context.Context, *UserInfo, *OperationResult) error
 }
 
 func RegisterLoginHandler(s server.Server, hdlr LoginHandler, opts ...server.HandlerOption) error {
@@ -122,6 +134,7 @@ func RegisterLoginHandler(s server.Server, hdlr LoginHandler, opts ...server.Han
 		Update(ctx context.Context, in *UserInfo, out *OperationResult) error
 		Query(ctx context.Context, in *UserInfo, out *UserInfo) error
 		Login(ctx context.Context, in *UserInfo, out *UserInfo) error
+		IsSameEmail(ctx context.Context, in *UserInfo, out *OperationResult) error
 	}
 	type Login struct {
 		login
@@ -152,4 +165,8 @@ func (h *loginHandler) Query(ctx context.Context, in *UserInfo, out *UserInfo) e
 
 func (h *loginHandler) Login(ctx context.Context, in *UserInfo, out *UserInfo) error {
 	return h.LoginHandler.Login(ctx, in, out)
+}
+
+func (h *loginHandler) IsSameEmail(ctx context.Context, in *UserInfo, out *OperationResult) error {
+	return h.LoginHandler.IsSameEmail(ctx, in, out)
 }

@@ -112,6 +112,9 @@ func QueryOrder(ctx *gin.Context) {
 		respOrder.BoatName = value.BoatName
 		respOrder.TotalPrice = value.TotalPrice
 		respOrder.CategoryName = value.CategoryName
+		respOrder.OrderId = value.OrderId
+		respOrder.OrderDate = value.OrderDate
+		respOrder.UserName = value.UserName
 		resp.Data = append(resp.Data, respOrder)
 	}
 

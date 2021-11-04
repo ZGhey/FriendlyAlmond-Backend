@@ -97,13 +97,25 @@ func Register(ctx *gin.Context) {
 	pbCaptcha.Id = req.Captcha.Id
 	pbCaptcha.Answer = req.Captcha.Answer
 	pbReq.Captcha = pbCaptcha
+
+	isSameEmail, err := rpcLoginService.IsSameEmail(context.TODO(), pbReq)
+	if err != nil {
+		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
+		statusCode = http.StatusBadRequest
+		return
+	} else if isSameEmail.StatusCode != utils.RECODE_OK {
+		resp.SetError(isSameEmail.StatusCode, utils.RecodeTest(utils.RECODE_MICROERR), err)
+		statusCode = http.StatusBadRequest
+		return
+	}
+
 	remoteResult, err := rpcLoginService.Register(context.TODO(), pbReq)
 	if err != nil {
 		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
 		statusCode = http.StatusBadRequest
 		return
 	} else if remoteResult.StatusCode != utils.RECODE_OK {
-		resp.SetError(remoteResult.StatusCode, "verify the captcha failed", err)
+		resp.SetError(remoteResult.StatusCode, utils.RecodeTest(utils.RECODE_MICROERR), err)
 		statusCode = http.StatusBadRequest
 		return
 	}
@@ -158,13 +170,25 @@ func Update(ctx *gin.Context) {
 	pbReq.Phone = req.Phone
 	pbReq.Address = req.Address
 	pbReq.AreaCode = req.AreaCode
+
+	isSameEmail, err := rpcLoginService.IsSameEmail(context.TODO(), pbReq)
+	if err != nil {
+		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
+		statusCode = http.StatusBadRequest
+		return
+	} else if isSameEmail.StatusCode != utils.RECODE_OK {
+		resp.SetError(isSameEmail.StatusCode, utils.RecodeTest(utils.RECODE_MICROERR), err)
+		statusCode = http.StatusBadRequest
+		return
+	}
+
 	remoteResult, err := rpcLoginService.Update(context.TODO(), pbReq)
 	if err != nil {
 		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
 		statusCode = http.StatusBadRequest
 		return
 	} else if remoteResult.StatusCode != utils.RECODE_OK {
-		resp.SetError(remoteResult.StatusCode, "verify the captcha failed", err)
+		resp.SetError(remoteResult.StatusCode, utils.RecodeTest(remoteResult.StatusCode), err)
 		statusCode = http.StatusBadRequest
 		return
 	}
@@ -286,6 +310,7 @@ func Login(ctx *gin.Context) {
 		resp.Data.LastName = remoteResult.Lastname
 		resp.Data.MiddleName = remoteResult.Middlename
 		resp.Data.Skill = remoteResult.Skill
+		resp.Data.Account = remoteResult.Account
 		return
 	}
 

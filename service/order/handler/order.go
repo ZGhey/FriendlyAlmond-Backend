@@ -4,6 +4,7 @@ import (
 	"FriendlyAlmond_backend/pkg/logger"
 	"FriendlyAlmond_backend/pkg/model/mysql"
 	config "FriendlyAlmond_backend/pkg/model/object/configuration"
+	"FriendlyAlmond_backend/pkg/model/object/login"
 	"FriendlyAlmond_backend/pkg/model/object/order"
 	"FriendlyAlmond_backend/pkg/utils"
 	pbOrder "FriendlyAlmond_backend/proto/order"
@@ -21,6 +22,7 @@ func (o Order) QueryOrder(ctx context.Context, req *pbOrder.OrderInfo, resp *pbO
 		orderComponent []order.Component
 		boatmodel      config.Boat
 		category       config.Category
+		userInfo       login.UserInfo
 	)
 	defer func() {
 		logger.Infof("calling QueryOrder success, req=%+v, resp=%+v", req, resp)
@@ -50,6 +52,18 @@ func (o Order) QueryOrder(ctx context.Context, req *pbOrder.OrderInfo, resp *pbO
 		pbQueryOrder.TotalPrice = value.TotalPrice
 		pbQueryOrder.OrderId = value.OrderId
 		pbQueryOrder.JobId = value.JobId
+		pbQueryOrder.OrderDate = value.Created.String()
+		if result := mysql.UserDB.Where("uid = ?", value.Uid).Find(&userInfo); result.Error != nil {
+			logger.Error(result.Error)
+			resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+			return nil
+		}
+
+		if userInfo.MiddleName != "" {
+			pbQueryOrder.UserName = userInfo.FirstName + " " + userInfo.MiddleName + " " + userInfo.LastName
+		} else {
+			pbQueryOrder.UserName = userInfo.FirstName + " " + userInfo.LastName
+		}
 		if result := mysql.ConfigBoatDB.Where("id = ?", value.BoatmodelId).Find(&boatmodel); result.Error != nil {
 			logger.Error(result.Error)
 			resp.StatusCode = utils.RECODE_DATAINEXISTENCE

@@ -5,10 +5,9 @@ import (
 	"FriendlyAlmond_backend/pkg/utils"
 	pbConfig "FriendlyAlmond_backend/proto/configuration"
 	"context"
-	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 // QueryBoat godoc
@@ -138,29 +137,33 @@ func QuerySection(ctx *gin.Context) {
 
 // QueryComponentById godoc
 // @Summary Get component。
-// @Description When post this API, the API will return a component info via id
+// @Description When post this API, the API will return a list of component info via id
 // @ID QueryComponentById
 // @tags Configuration
 // @Accept  json
 // @Produce  json
-// @Param id path int64 true "component id"
+// @Param type body configuration.ReqListId true "{"id":[1,2]}"
 // @Success 0 {object} configuration.RespComponentId
 // @Header 200 {header} string
 // @Failure 4005 {object} configuration.RespComponentId "The micro-service can't be reachable"
 // @Failure 4001 {object} configuration.RespComponentId "Database problem"
-// @Router /config/query-component/{id} [get]
+// @Router /config/query-component-id [post]
 func QueryComponentById(ctx *gin.Context) {
 	var (
 		statusCode int
+		req        config.ReqListId
 		resp       config.RespComponentId
-		pbReq      pbConfig.Component
+		pbReq      pbConfig.ListId
 	)
 	defer func() {
 		responseHTTP(ctx, statusCode, &resp)
 	}()
-	componentId := ctx.Param("id")
-	pbReq.Id, _ = strconv.ParseInt(componentId, 10, 64)
-	result, err := rpcConfigService.GetComById(context.TODO(), &pbReq)
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		resp.SetError(utils.RECODE_DATAERR, utils.RecodeTest(utils.RECODE_DATAERR), err)
+		statusCode = http.StatusBadRequest
+	}
+	pbReq.Id = req.Id
+	result, err := rpcConfigService.QueryComById(context.TODO(), &pbReq)
 	if err != nil {
 		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
 		statusCode = http.StatusBadRequest
@@ -170,42 +173,50 @@ func QueryComponentById(ctx *gin.Context) {
 		statusCode = http.StatusBadRequest
 		return
 	}
+	for _, value := range result.Data {
+		component := new(config.Component)
+		component.Id = value.Id
+		component.Name = value.Name
+		component.Details = value.Details
+		component.SupplierId = value.SupplierId
+		component.CategoryId = value.CategoryId
+		component.Price = value.Price
+		resp.Data = append(resp.Data, *component)
+	}
+
 	statusCode = http.StatusOK
-	marshal, err := json.Marshal(&result)
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(marshal, &resp.Data)
-	if err != nil {
-		return
-	}
 	resp.NewSuccess()
 }
 
 // QuerySectionById godoc
 // @Summary Get section。
-// @Description When post this API, the API will return a section info via id
+// @Description When post this API, the API will return a list of section info via id
 // @ID QuerySectionById
 // @tags Configuration
 // @Accept  json
 // @Produce  json
-// @Param id path string true "section id"
+// @Param type body configuration.ReqListId true "{"id":[1,2]}"
 // @Success 0 {object} configuration.RespSectionId
 // @Header 200 {header} string
 // @Failure 4005 {object} configuration.RespSectionId "The micro-service can't be reachable"
 // @Failure 4001 {object} configuration.RespSectionId "Database problem"
-// @Router /config/query-section/{id} [get]
+// @Router /config/query-section-id [post]
 func QuerySectionById(ctx *gin.Context) {
 	var (
 		statusCode int
+		req        config.ReqListId
 		resp       config.RespSectionId
-		pbReq      pbConfig.Section
+		pbReq      pbConfig.ListId
 	)
 	defer func() {
 		responseHTTP(ctx, statusCode, &resp)
 	}()
-	sectionId := ctx.Param("id")
-	pbReq.Id, _ = strconv.ParseInt(sectionId, 10, 64)
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		resp.SetError(utils.RECODE_DATAERR, utils.RecodeTest(utils.RECODE_DATAERR), err)
+		statusCode = http.StatusBadRequest
+	}
+	fmt.Println(req.Id)
+	pbReq.Id = req.Id
 	result, err := rpcConfigService.QuerySecById(context.TODO(), &pbReq)
 	if err != nil {
 		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
@@ -217,14 +228,18 @@ func QuerySectionById(ctx *gin.Context) {
 		return
 	}
 
+	for _, value := range result.Data {
+		section := new(config.Section)
+		section.Id = value.Id
+		section.CategoryId = value.Id
+		section.Name = value.Name
+		section.Specs = value.Specs
+		//section.StartTime = value.StartTime
+		//section.EndTime = value.EndTime
+		section.Price = value.Price
+		section.Detail = value.Detail
+		resp.Data = append(resp.Data, *section)
+	}
 	statusCode = http.StatusOK
-	marshal, err := json.Marshal(&result)
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(marshal, &resp.Data)
-	if err != nil {
-		return
-	}
 	resp.NewSuccess()
 }

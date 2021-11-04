@@ -11,8 +11,8 @@ service Configuration{
   rpc QueryPackage(Empty)returns(ListPackage){}
   rpc QuerySection(Category)returns(ListSection){}
   rpc QuerySupplier(Empty)returns(ListSupplier){}
-  rpc QuerySecById(Section)returns(Section){}
-  rpc GetComById(Component)returns(Component){}
+  rpc QuerySecById(ListId)returns(ListSection){}
+  rpc QueryComById(ListId)returns(ListComponent){}
 }
 message Empty{}
 
@@ -44,6 +44,10 @@ message ListSection{
 message ListSupplier{
   string StatusCode = 1;
   repeated Supplier Data = 2;
+}
+
+message ListId{
+  repeated int32 Id = 1;
 }
 
 message Boat{

@@ -17,7 +17,7 @@ type RespSection struct {
 }
 type RespSectionId struct {
 	model.JSONResult
-	Data Section `json:"data"`
+	Data []Section `json:"data"`
 }
 type Section struct {
 	Id         int64     `json:"id" gorm:"not null;unique;primaryKey;autoIncrement"`

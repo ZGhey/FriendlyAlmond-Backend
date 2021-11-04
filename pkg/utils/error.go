@@ -9,6 +9,7 @@ const (
 	RECODE_STOREDATA_FAILED = "4006"
 	RECODE_DATAINEXISTENCE  = "4007"
 	RECODE_STOREDATA_OK     = "4008"
+	RECODE_DATAEXISTENCE    = "4009"
 
 	RECODE_TOKENERR = "4101"
 	RECODE_LOGINERR = "4102"
@@ -34,6 +35,7 @@ var recodeText = map[string]string{
 	RECODE_STOREDATA_FAILED: "store data into database is failed",
 	RECODE_DATAINEXISTENCE:  "the data is not exists in the database",
 	RECODE_STOREDATA_OK:     "the data store successful",
+	RECODE_DATAEXISTENCE:    "the data is exists in the database",
 
 	//token and login
 	RECODE_TOKENERR:     "verify the token failed",

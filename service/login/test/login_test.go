@@ -8,10 +8,6 @@ import (
 	"testing"
 )
 
-func BeanchMarkResgist(t *testing.T) {
-
-}
-
 func TestRegisting(t *testing.T) {
 	info := new(pbLogin.UserInfo)
 	info.LastName = "lastname"

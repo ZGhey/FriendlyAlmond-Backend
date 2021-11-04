@@ -91,8 +91,8 @@ func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
 		r2.POST("/query-boat", controller.QueryBoat)
 		r2.POST("/query-component", controller.QueryComponent)
 		r2.POST("/query-section", controller.QuerySection)
-		r2.GET("/query-component/:id", controller.QueryComponentById)
-		r2.GET("/query-section/:id", controller.QuerySectionById)
+		r2.POST("/query-component-id", controller.QueryComponentById)
+		r2.POST("/query-section-id", controller.QuerySectionById)
 	}
 
 	r3 := router.Group("api/v1.0/order")
@@ -111,6 +111,8 @@ func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
 		r4.POST("create-job", controller.CreateJob)
 		r4.POST("create-task", controller.CreateTask)
 		r4.POST("query-task", controller.QueryTask)
+		r4.GET("most-popular", controller.MostPopular)
+		r4.GET("total-sales", controller.TotalSales)
 	}
 	//if middleWare != nil {
 	//	router.Use(middleWare)

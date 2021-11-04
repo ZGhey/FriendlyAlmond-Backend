@@ -44,4 +44,5 @@ type UserInfo struct {
 	IsAdmin    bool   `json:"is_admin"`
 	StaffId    int32  `json:"staff_id"`
 	Skill      string `json:"skill"`
+	Account    string `json:"account"`
 }

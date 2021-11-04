@@ -14,6 +14,90 @@ import (
 
 type JobModule struct{}
 
+func (j JobModule) QueryMostPopular(ctx context.Context, req *pbJobModule.Empty, resp *pbJobModule.MostPopular) error {
+	var (
+		orderData      order.Order
+		orderSection   order.Section
+		orderComponent order.Component
+	)
+	defer func() {
+		logger.Infof("calling QueryMostPopular success, req=%+v, resp=%+v", req, resp)
+	}()
+	if result := mysql.OrderDB.Model(&orderData).Select("color, count(color) as total").Group("color").Order("total desc").Find(&resp.Colors); result.Error != nil {
+		logger.Error("the data is not exists in the database")
+		logger.Error(result.Error)
+		resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+		return nil
+	}
+	if result := mysql.OrderDB.Model(&orderSection).Select("section_id as section,count(section_id) as total").Group("section_id").Order("total desc").Find(&resp.Sections); result.Error != nil {
+		logger.Error("the data is not exists in the database")
+		logger.Error(result.Error)
+		resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+		return nil
+	}
+	for index, value := range resp.Sections {
+		section := new(config.Section)
+		if result := mysql.ConfigBoatDB.Model(&section).Where("id = ?", value.Section).Find(&section); result.Error != nil {
+			logger.Error("the data is not exists in the database")
+			logger.Error(result.Error)
+			resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+			return nil
+		}
+		resp.Sections[index].Section = section.Name
+	}
+
+	if result := mysql.OrderDB.Model(&orderComponent).Select("component_id as component,count(component_id) as total").Group("component_id").Order("total desc").Find(&resp.Components); result.Error != nil {
+		logger.Error("the data is not exists in the database")
+		logger.Error(result.Error)
+		resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+		return nil
+	}
+	for index, value := range resp.Components {
+		component := new(config.Component)
+		if result := mysql.ConfigBoatDB.Model(&component).Where("id = ?", value.Component).Find(&component); result.Error != nil {
+			logger.Error("the data is not exists in the database")
+			logger.Error(result.Error)
+			resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+			return nil
+		}
+		resp.Components[index].Component = component.Details
+	}
+	resp.StatusCode = utils.RECODE_OK
+	return nil
+}
+
+func (j JobModule) QueryTotalSales(ctx context.Context, req *pbJobModule.Empty, resp *pbJobModule.TotalSales) error {
+	var (
+		orderData order.Order
+	)
+	defer func() {
+		logger.Infof("calling QueryTotalSales success, req=%+v, resp=%+v", req, resp)
+	}()
+	//calculate total sales for last 1 month
+	if result := mysql.OrderDB.Model(&orderData).Select("sum(total_price) as LastOneMonth").Where("PERIOD_DIFF(date_format(now(), '%Y%m'), date_format(created, '%Y%m')) = 1").Find(&resp.LastOneMonth); result.Error != nil {
+		logger.Error(result.Error)
+		resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+		return nil
+	}
+
+	//calculate total sales for last 3 month
+	if result := mysql.OrderDB.Model(&orderData).Select("sum(total_price) as LastThreeMonth").Where("PERIOD_DIFF(date_format(now(), '%Y%m'), date_format(created, '%Y%m')) = 3").Find(&resp.LastThreeMonth); result.Error != nil {
+		logger.Error(result.Error)
+	}
+
+	//calculate total sales for last 6 month
+	if result := mysql.OrderDB.Model(&orderData).Select("sum(total_price) as LastSixMonth").Where("PERIOD_DIFF(date_format(now(), '%Y%m'), date_format(created, '%Y%m')) = 6").Find(&resp.LastSixMonth); result.Error != nil {
+		logger.Error(result.Error)
+	}
+
+	//calculate total sales for last year
+	if result := mysql.OrderDB.Model(&orderData).Select("sum(total_price) as LastOneYear").Where("year(created) = year(date_sub(now(), interval 1 year))").Find(&resp.LastOneYear); result.Error != nil {
+		logger.Error(result.Error)
+	}
+	resp.StatusCode = utils.RECODE_OK
+	return nil
+}
+
 func (j JobModule) QueryNoJobOrder(ctx context.Context, req *pbJobModule.Empty, resp *pbJobModule.ListQueryOrder) error {
 	var (
 		orderData      []order.Order
@@ -205,6 +289,7 @@ func (j JobModule) Login(ctx context.Context, req *pbJobModule.Staff, resp *pbJo
 			resp.Lastname = staffInfo.Lastname
 			resp.Middlename = staffInfo.Middlename
 			resp.Skill = staffInfo.Skill
+			resp.Account = staffInfo.Account
 			resp.OperationResult = op
 			return nil
 		} else if req.Account != staffInfo.Account || req.Password != staffInfo.Password {

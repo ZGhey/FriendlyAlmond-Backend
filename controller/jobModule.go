@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"FriendlyAlmond_backend/pkg/logger"
 	"FriendlyAlmond_backend/pkg/model"
 	"FriendlyAlmond_backend/pkg/model/object/jobModule"
 	"FriendlyAlmond_backend/pkg/model/object/login"
@@ -8,12 +9,13 @@ import (
 	"FriendlyAlmond_backend/pkg/utils"
 	pbJobModule "FriendlyAlmond_backend/proto/jobModule"
 	"context"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 // UpdateStaff godoc
-// @Summary update user info。
+// @Summary update staff info。
 // @Description When POST this API, the API will update the staff info into DB
 // @ID UpdateStaff
 // @tags Job_Module
@@ -75,7 +77,7 @@ func UpdateStaff(ctx *gin.Context) {
 }
 
 // AddStaff godoc
-// @Summary update user info。
+// @Summary add a new staff。
 // @Description When POST this API, the API will create a staff
 // @ID AddStaff
 // @tags Job_Module
@@ -137,7 +139,7 @@ func AddStaff(ctx *gin.Context) {
 }
 
 // QueryStaff godoc
-// @Summary query order data。
+// @Summary query staff data。
 // @Description When get this API, the API will return all staff info
 // @ID QueryStaff
 // @tags Job_Module
@@ -190,7 +192,7 @@ func QueryStaff(ctx *gin.Context) {
 }
 
 // QueryUser godoc
-// @Summary query order data。
+// @Summary query user。
 // @Description When get this API, the API will return all user info
 // @ID QueryUser
 // @tags Job_Module
@@ -241,7 +243,7 @@ func QueryUser(ctx *gin.Context) {
 }
 
 // QueryNoJobOrder godoc
-// @Summary query order data。
+// @Summary return the order haven't a job yet。
 // @Description When get this API, the API will return the order haven't assigned a job
 // @ID QueryNoJobOrder
 // @tags Job_Module
@@ -293,7 +295,7 @@ func QueryNoJobOrder(ctx *gin.Context) {
 }
 
 // CreateJob godoc
-// @Summary update user info。
+// @Summary create job。
 // @Description When POST this API, the API will create a job
 // @ID CreateJob
 // @tags Job_Module
@@ -336,7 +338,7 @@ func CreateJob(ctx *gin.Context) {
 }
 
 // CreateTask godoc
-// @Summary update user info。
+// @Summary create task。
 // @Description When POST this API, the API will create a task
 // @ID CreateTask
 // @tags Job_Module
@@ -385,7 +387,7 @@ func CreateTask(ctx *gin.Context) {
 }
 
 // QueryTask godoc
-// @Summary update user info。
+// @Summary query task。
 // @Description When POST this API, the API will all the task in a job
 // @ID QueryTask
 // @tags Job_Module
@@ -434,6 +436,91 @@ func QueryTask(ctx *gin.Context) {
 		task.DueDate = value.DueDate
 		resp.Data = append(resp.Data, *task)
 	}
+	statusCode = http.StatusOK
+	resp.NewSuccess()
+}
+
+// MostPopular godoc
+// @Summary get the most popular things。
+// @Description When POST this API, the API will return the most popular things. like color, component, section.
+// @ID MostPopular
+// @tags Job_Module
+// @Accept  json
+// @Produce  json
+// @Success 0 {object} jobModule.RespMostPopular
+// @Header 200 {header} string
+// @Failure 4005 {object} jobModule.RespMostPopular "The micro-service can't be reachable"
+// @Router /job/most-popular [get]
+func MostPopular(ctx *gin.Context) {
+	var (
+		statusCode int
+		resp       jobModule.RespMostPopular
+		pbReq      pbJobModule.Empty
+	)
+	defer func() {
+		responseHTTP(ctx, statusCode, &resp)
+	}()
+
+	remoteResult, err := rpcJobModuleService.QueryMostPopular(context.TODO(), &pbReq)
+	if err != nil {
+		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
+		statusCode = http.StatusBadRequest
+		return
+	} else if remoteResult.StatusCode != utils.RECODE_OK {
+		resp.SetError(remoteResult.StatusCode, utils.RecodeTest(remoteResult.StatusCode), err)
+		statusCode = http.StatusBadRequest
+		return
+	}
+	marshal, err := json.Marshal(remoteResult)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	err = json.Unmarshal(marshal, &resp.Data)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	statusCode = http.StatusOK
+	resp.NewSuccess()
+}
+
+// TotalSales godoc
+// @Summary get the total sales
+// @Description When POST this API, the API will return the for last 1, 3, 6 month and 1 year.
+// @ID TotalSales
+// @tags Job_Module
+// @Accept  json
+// @Produce  json
+// @Param jobModule.Task body jobModule.Task true "just need the job id"
+// @Success 0 {object} jobModule.RespTask
+// @Header 200 {header} string
+// @Failure 4005 {object} jobModule.RespTask "The micro-service can't be reachable"
+// @Router /job/total-sales [get]
+func TotalSales(ctx *gin.Context) {
+	var (
+		statusCode int
+		resp       jobModule.RespTotalSales
+		pbReq      pbJobModule.Empty
+	)
+	defer func() {
+		responseHTTP(ctx, statusCode, &resp)
+	}()
+
+	remoteResult, err := rpcJobModuleService.QueryTotalSales(context.TODO(), &pbReq)
+	if err != nil {
+		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
+		statusCode = http.StatusBadRequest
+		return
+	} else if remoteResult.StatusCode != utils.RECODE_OK {
+		resp.SetError(remoteResult.StatusCode, utils.RecodeTest(remoteResult.StatusCode), err)
+		statusCode = http.StatusBadRequest
+		return
+	}
+	resp.Data.LastOneMonth = remoteResult.LastOneMonth
+	resp.Data.LastThreeMonth = remoteResult.LastThreeMonth
+	resp.Data.LastSixMonth = remoteResult.LastSixMonth
+	resp.Data.LastOneYear = remoteResult.LastOneYear
 	statusCode = http.StatusOK
 	resp.NewSuccess()
 }

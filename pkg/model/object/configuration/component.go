@@ -17,7 +17,11 @@ type RespComponent struct {
 
 type RespComponentId struct {
 	model.JSONResult
-	Data Component `json:"data"`
+	Data []Component `json:"data"`
+}
+
+type ReqListId struct {
+	Id []int32 `json:"id"`
 }
 
 type Component struct {

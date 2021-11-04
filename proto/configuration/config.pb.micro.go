@@ -42,8 +42,8 @@ type ConfigurationService interface {
 	QueryPackage(ctx context.Context, in *Empty, opts ...client.CallOption) (*ListPackage, error)
 	QuerySection(ctx context.Context, in *Category, opts ...client.CallOption) (*ListSection, error)
 	QuerySupplier(ctx context.Context, in *Empty, opts ...client.CallOption) (*ListSupplier, error)
-	QuerySecById(ctx context.Context, in *Section, opts ...client.CallOption) (*Section, error)
-	GetComById(ctx context.Context, in *Component, opts ...client.CallOption) (*Component, error)
+	QuerySecById(ctx context.Context, in *ListId, opts ...client.CallOption) (*ListSection, error)
+	QueryComById(ctx context.Context, in *ListId, opts ...client.CallOption) (*ListComponent, error)
 }
 
 type configurationService struct {
@@ -118,9 +118,9 @@ func (c *configurationService) QuerySupplier(ctx context.Context, in *Empty, opt
 	return out, nil
 }
 
-func (c *configurationService) QuerySecById(ctx context.Context, in *Section, opts ...client.CallOption) (*Section, error) {
+func (c *configurationService) QuerySecById(ctx context.Context, in *ListId, opts ...client.CallOption) (*ListSection, error) {
 	req := c.c.NewRequest(c.name, "Configuration.QuerySecById", in)
-	out := new(Section)
+	out := new(ListSection)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -128,9 +128,9 @@ func (c *configurationService) QuerySecById(ctx context.Context, in *Section, op
 	return out, nil
 }
 
-func (c *configurationService) GetComById(ctx context.Context, in *Component, opts ...client.CallOption) (*Component, error) {
-	req := c.c.NewRequest(c.name, "Configuration.GetComById", in)
-	out := new(Component)
+func (c *configurationService) QueryComById(ctx context.Context, in *ListId, opts ...client.CallOption) (*ListComponent, error) {
+	req := c.c.NewRequest(c.name, "Configuration.QueryComById", in)
+	out := new(ListComponent)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -147,8 +147,8 @@ type ConfigurationHandler interface {
 	QueryPackage(context.Context, *Empty, *ListPackage) error
 	QuerySection(context.Context, *Category, *ListSection) error
 	QuerySupplier(context.Context, *Empty, *ListSupplier) error
-	QuerySecById(context.Context, *Section, *Section) error
-	GetComById(context.Context, *Component, *Component) error
+	QuerySecById(context.Context, *ListId, *ListSection) error
+	QueryComById(context.Context, *ListId, *ListComponent) error
 }
 
 func RegisterConfigurationHandler(s server.Server, hdlr ConfigurationHandler, opts ...server.HandlerOption) error {
@@ -159,8 +159,8 @@ func RegisterConfigurationHandler(s server.Server, hdlr ConfigurationHandler, op
 		QueryPackage(ctx context.Context, in *Empty, out *ListPackage) error
 		QuerySection(ctx context.Context, in *Category, out *ListSection) error
 		QuerySupplier(ctx context.Context, in *Empty, out *ListSupplier) error
-		QuerySecById(ctx context.Context, in *Section, out *Section) error
-		GetComById(ctx context.Context, in *Component, out *Component) error
+		QuerySecById(ctx context.Context, in *ListId, out *ListSection) error
+		QueryComById(ctx context.Context, in *ListId, out *ListComponent) error
 	}
 	type Configuration struct {
 		configuration
@@ -197,10 +197,10 @@ func (h *configurationHandler) QuerySupplier(ctx context.Context, in *Empty, out
 	return h.ConfigurationHandler.QuerySupplier(ctx, in, out)
 }
 
-func (h *configurationHandler) QuerySecById(ctx context.Context, in *Section, out *Section) error {
+func (h *configurationHandler) QuerySecById(ctx context.Context, in *ListId, out *ListSection) error {
 	return h.ConfigurationHandler.QuerySecById(ctx, in, out)
 }
 
-func (h *configurationHandler) GetComById(ctx context.Context, in *Component, out *Component) error {
-	return h.ConfigurationHandler.GetComById(ctx, in, out)
+func (h *configurationHandler) QueryComById(ctx context.Context, in *ListId, out *ListComponent) error {
+	return h.ConfigurationHandler.QueryComById(ctx, in, out)
 }

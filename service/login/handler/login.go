@@ -11,6 +11,21 @@ import (
 
 type Login struct{}
 
+func (l *Login) IsSameEmail(ctx context.Context, req *pbLogin.UserInfo, resp *pbLogin.OperationResult) error {
+	var (
+		userInfo login.UserInfo
+	)
+	defer func() {
+		logger.Infof("calling IsSameEmail success, resp=%+v", resp)
+	}()
+	result := mysql.UserDB.Where("email = ?", req.Email).Find(&userInfo)
+	if result.Error != nil {
+		resp.StatusCode = utils.RECODE_OK
+	}
+	resp.StatusCode = utils.RECODE_DATAEXISTENCE
+	return nil
+}
+
 //GenerateCaptcha create a captcha, it used for user login and sign in
 func (l *Login) GenerateCaptcha(ctx context.Context, req *pbLogin.Empty, resp *pbLogin.Captcha) error {
 	defer func() {
