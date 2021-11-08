@@ -7,6 +7,7 @@ option go_package = "./proto/order;pbOrder";
 service Order{
   rpc CreateOrder(OrderInfo)returns(OperateResult){}
   rpc QueryOrder(OrderInfo)returns(ListQueryOrder){}
+  rpc AddComment(OrderInfo)returns(OperateResult){}
 }
 
 message ListQueryOrder{
@@ -39,6 +40,7 @@ message OrderInfo{
   string Uid = 8;
   int32 OrderId = 9;
   int32 JobId = 10;
+  string Comment = 11;
 }
 
 message OperateResult{

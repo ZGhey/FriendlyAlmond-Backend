@@ -121,3 +121,48 @@ func QueryOrder(ctx *gin.Context) {
 	statusCode = http.StatusOK
 	resp.NewSuccess()
 }
+
+// AddComment godoc
+// @Summary add comment for order。
+// @Description When post this API, the API will update the comment for the current order via order_id
+// @ID AddComment
+// @tags Order
+// @Accept  json
+// @Produce  json
+// @Param type body order.ReqOrder true "order_id & comment."
+// @Success 0 {object} model.JSONResult
+// @Header 200 {header} string
+// @Failure 4005 {object} model.JSONResult "The micro-service can't be reachable"
+// @Failure 4001 {object} model.JSONResult "Database problem"
+// @Router /order/add-comment [post]
+func AddComment(ctx *gin.Context) {
+	var (
+		statusCode  int
+		req         order.ReqOrder
+		resp        model.JSONResult
+		pbOrderInfo pbOrder.OrderInfo
+	)
+	defer func() {
+		responseHTTP(ctx, statusCode, &resp)
+	}()
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		resp.SetError(utils.RECODE_DATAERR, utils.RecodeTest(utils.RECODE_DATAERR), err)
+		statusCode = http.StatusBadRequest
+	}
+	pbOrderInfo.OrderId = req.OrderId
+	pbOrderInfo.Comment = req.Comment
+	result, err := rpcOrderService.AddComment(context.TODO(), &pbOrderInfo)
+	if err != nil {
+		resp.SetError(utils.RECODE_MICROERR, utils.RecodeTest(utils.RECODE_MICROERR), err)
+		statusCode = http.StatusBadRequest
+		return
+	} else if result.StatusCode != utils.RECODE_OK {
+		resp.SetError(result.StatusCode, result.StatusCode, err)
+		statusCode = http.StatusBadRequest
+		return
+	}
+
+	statusCode = http.StatusOK
+	resp.NewSuccess()
+}

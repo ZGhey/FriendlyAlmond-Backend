@@ -14,6 +14,22 @@ import (
 type Order struct {
 }
 
+func (o Order) AddComment(ctx context.Context, req *pbOrder.OrderInfo, resp *pbOrder.OperateResult) error {
+	var (
+		orderData order.Order
+	)
+	defer func() {
+		logger.Infof("calling AddComment success, req=%+v, resp=%+v", req, resp)
+	}()
+	if result := mysql.OrderDB.Model(&orderData).Where("order_id = ?", req.OrderId).Update("comment", req.Comment); result.Error != nil {
+		logger.Error(result.Error)
+		resp.StatusCode = utils.RECODE_DATAINEXISTENCE
+		return nil
+	}
+	resp.StatusCode = utils.RECODE_OK
+	return nil
+}
+
 //QueryOrder query order by uid, it will respond a list of order
 func (o Order) QueryOrder(ctx context.Context, req *pbOrder.OrderInfo, resp *pbOrder.ListQueryOrder) error {
 	var (

@@ -38,6 +38,7 @@ func NewOrderEndpoints() []*api.Endpoint {
 type OrderService interface {
 	CreateOrder(ctx context.Context, in *OrderInfo, opts ...client.CallOption) (*OperateResult, error)
 	QueryOrder(ctx context.Context, in *OrderInfo, opts ...client.CallOption) (*ListQueryOrder, error)
+	AddComment(ctx context.Context, in *OrderInfo, opts ...client.CallOption) (*OperateResult, error)
 }
 
 type orderService struct {
@@ -72,17 +73,29 @@ func (c *orderService) QueryOrder(ctx context.Context, in *OrderInfo, opts ...cl
 	return out, nil
 }
 
+func (c *orderService) AddComment(ctx context.Context, in *OrderInfo, opts ...client.CallOption) (*OperateResult, error) {
+	req := c.c.NewRequest(c.name, "Order.AddComment", in)
+	out := new(OperateResult)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Order service
 
 type OrderHandler interface {
 	CreateOrder(context.Context, *OrderInfo, *OperateResult) error
 	QueryOrder(context.Context, *OrderInfo, *ListQueryOrder) error
+	AddComment(context.Context, *OrderInfo, *OperateResult) error
 }
 
 func RegisterOrderHandler(s server.Server, hdlr OrderHandler, opts ...server.HandlerOption) error {
 	type order interface {
 		CreateOrder(ctx context.Context, in *OrderInfo, out *OperateResult) error
 		QueryOrder(ctx context.Context, in *OrderInfo, out *ListQueryOrder) error
+		AddComment(ctx context.Context, in *OrderInfo, out *OperateResult) error
 	}
 	type Order struct {
 		order
@@ -101,4 +114,8 @@ func (h *orderHandler) CreateOrder(ctx context.Context, in *OrderInfo, out *Oper
 
 func (h *orderHandler) QueryOrder(ctx context.Context, in *OrderInfo, out *ListQueryOrder) error {
 	return h.OrderHandler.QueryOrder(ctx, in, out)
+}
+
+func (h *orderHandler) AddComment(ctx context.Context, in *OrderInfo, out *OperateResult) error {
+	return h.OrderHandler.AddComment(ctx, in, out)
 }

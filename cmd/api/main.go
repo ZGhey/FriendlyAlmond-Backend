@@ -99,6 +99,7 @@ func ginRouter() *gin.Engine {
 	{
 		r3.POST("/create", controller.CreateOrder)
 		r3.POST("/query", controller.QueryOrder)
+		r3.POST("/add-comment", controller.AddComment)
 	}
 
 	//job module
