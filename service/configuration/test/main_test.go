@@ -11,6 +11,7 @@ import (
 	"testing"
 )
 
+//same config with the corresponding config file in conf doc
 var (
 	configStr = `
 log_path: ./log/login
@@ -38,6 +39,7 @@ redis:
 `
 )
 
+//TestMain before run the unit test, this method will run firstly.
 func TestMain(m *testing.M) {
 	fmt.Println("running test main")
 	logger.InitDefault(&logger.Options{

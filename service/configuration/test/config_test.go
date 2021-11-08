@@ -28,15 +28,13 @@ func TestQueryComponent(t *testing.T) {
 	}
 }
 
-func TestQueryComponentById(t *testing.T) {
-	info := new(pbConfig.Section)
-	info.Id = 1
+func TestQuerySecById(t *testing.T) {
+	info := new(pbConfig.ListId)
+	info.Id = []int32{1, 2, 3}
 	p := &handler.Config{}
-	result := new(pbConfig.Section)
-	for i := 0; i < 10; i++ {
-		err := p.QuerySectionById(context.Background(), info, result)
-		if err != nil {
-			return
-		}
+	result := new(pbConfig.ListSection)
+	err := p.QuerySecById(context.Background(), info, result)
+	if err != nil {
+		return
 	}
 }

@@ -4,14 +4,11 @@ import (
 	"FriendlyAlmond_backend/cmd/api/docs"
 	"FriendlyAlmond_backend/pkg/daemon"
 	"FriendlyAlmond_backend/pkg/model/consulreg"
-	"net/http"
 	"strings"
 	"time"
 
 	"FriendlyAlmond_backend/controller"
 	"FriendlyAlmond_backend/pkg/logger"
-	"FriendlyAlmond_backend/pkg/model"
-	"FriendlyAlmond_backend/pkg/model/jwt"
 	"FriendlyAlmond_backend/pkg/utils"
 	"strconv"
 
@@ -66,7 +63,7 @@ import (
 // @x-extension-openapi {"example": "value on a json format"}
 
 //router used for unit test
-func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
+func ginRouter() *gin.Engine {
 	router := gin.Default()
 	// swagger
 	docs.SwaggerInfo.Host = utils.GetConfigStr("tls_domain") + ":" + utils.GetConfigStr("port")
@@ -77,6 +74,7 @@ func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
 	router.Use(ginLogger())
 	router.Use(CORS())
 
+	//user login
 	r1 := router.Group("api/v1.0/login")
 	{
 		r1.GET("/get-captcha", controller.GetCaptcha)
@@ -86,6 +84,7 @@ func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
 		r1.POST("/login", controller.Login)
 	}
 
+	//configuration
 	r2 := router.Group("api/v1.0/config")
 	{
 		r2.POST("/query-boat", controller.QueryBoat)
@@ -95,12 +94,14 @@ func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
 		r2.POST("/query-section-id", controller.QuerySectionById)
 	}
 
+	//order
 	r3 := router.Group("api/v1.0/order")
 	{
 		r3.POST("/create", controller.CreateOrder)
 		r3.POST("/query", controller.QueryOrder)
 	}
 
+	//job module
 	r4 := router.Group("api/v1.0/job")
 	{
 		r4.POST("update-staff", controller.UpdateStaff)
@@ -114,10 +115,6 @@ func ginRouter(middleWare gin.HandlerFunc) *gin.Engine {
 		r4.GET("most-popular", controller.MostPopular)
 		r4.GET("total-sales", controller.TotalSales)
 	}
-	//if middleWare != nil {
-	//	router.Use(middleWare)
-	//}
-
 	return router
 }
 
@@ -146,7 +143,7 @@ func main() {
 	}
 	controller.InitRpcCaller()
 
-	router := ginRouter(JWTAuth())
+	router := ginRouter()
 
 	logger.Info(gin.Version)
 	port := utils.GetConfigInt("port")
@@ -159,38 +156,7 @@ func main() {
 	}
 }
 
-// JWTAuth middleware for check token
-func JWTAuth() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var result model.JSONResult
-		token := c.Request.Header.Get("token")
-		if token == "" {
-			c.JSON(http.StatusOK, result.NewError(utils.RECODE_TOKENERR))
-			c.Abort()
-			return
-		}
-
-		j := jwt.NewJWT()
-		// parse token
-		claims, err := j.ParseToken(token)
-		if err != nil {
-			if err == jwt.TokenExpired {
-				c.JSON(http.StatusOK, result.NewError(utils.RECODE_TOKENEXPIRED))
-				c.Abort()
-				return
-			}
-			c.JSON(http.StatusOK, gin.H{
-				"status": -1,
-				"msg":    err.Error(),
-			})
-			c.Abort()
-			return
-		}
-		// continue pass to next router
-		c.Set("claims", claims)
-	}
-}
-
+//ginLogger log format
 func ginLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		t := utils.Now()
@@ -217,6 +183,7 @@ func ginLogger() gin.HandlerFunc {
 
 }
 
+//CORS set for cross over origin
 func CORS() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		context.Writer.Header().Set("Access-Control-Allow-Origin", "*")

@@ -51,13 +51,13 @@ func TestQuery(t *testing.T) {
 	}
 }
 
-func TestLogin(t *testing.T) {
-	//info := new(pbLogin.UserInfo)
-	//info.Uid = utils.NewLen(10)
-	//p := &handler.Login{}
-	//result := new(pbLogin.OperationResult)
-	//err := p.Login(context.Background(), info, result)
-	//if err != nil {
-	//	return
-	//}
+func TestIsSameEmail(t *testing.T) {
+	info := new(pbLogin.UserInfo)
+	info.Email = "test222@gmail.com"
+	p := &handler.Login{}
+	result := new(pbLogin.OperationResult)
+	err := p.IsSameEmail(context.Background(), info, result)
+	if err != nil {
+		return
+	}
 }

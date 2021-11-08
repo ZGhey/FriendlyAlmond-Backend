@@ -5,7 +5,6 @@ import (
 	"FriendlyAlmond_backend/pkg/utils"
 	pbConfig "FriendlyAlmond_backend/proto/configuration"
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -193,7 +192,7 @@ func QueryComponentById(ctx *gin.Context) {
 // @Description When post this API, the API will return a list of section info via id
 // @ID QuerySectionById
 // @tags Configuration
-// @Accept  json
+// @Accept  str
 // @Produce  json
 // @Param type body configuration.ReqListId true "{"id":[1,2]}"
 // @Success 0 {object} configuration.RespSectionId
@@ -215,7 +214,6 @@ func QuerySectionById(ctx *gin.Context) {
 		resp.SetError(utils.RECODE_DATAERR, utils.RecodeTest(utils.RECODE_DATAERR), err)
 		statusCode = http.StatusBadRequest
 	}
-	fmt.Println(req.Id)
 	pbReq.Id = req.Id
 	result, err := rpcConfigService.QuerySecById(context.TODO(), &pbReq)
 	if err != nil {

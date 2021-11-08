@@ -25,6 +25,7 @@ func responseHTTP(ctx *gin.Context, statusCode int, data jsonResult) {
 	ctx.JSON(statusCode, &data)
 }
 
+//register RPC service for controller use
 var (
 	rpcLoginService     pbLogin.LoginService
 	rpcConfigService    pbConfig.ConfigurationService
@@ -32,6 +33,7 @@ var (
 	rpcJobModuleService pbJobModule.JobModuleService
 )
 
+//InitRpcCaller init the rpc service
 func InitRpcCaller() {
 	rpcLoginService = pbLogin.NewLoginService("login", consulreg.MicroSer.Client())
 	rpcConfigService = pbConfig.NewConfigurationService("configuration", consulreg.MicroSer.Client())

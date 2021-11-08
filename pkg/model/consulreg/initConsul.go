@@ -15,16 +15,7 @@ var (
 	once     sync.Once
 )
 
-//func init() {
-//	consulReg := consul.NewRegistry(
-//		registry.Addrs(utils2.GetConfigStr("micro.addr")))
-//	MicroSer = micro.NewService(
-//		micro.Name(utils2.GetConfigStr("micro.name")),
-//		micro.Registry(consulReg),
-//		micro.Tracer(trace.DefaultTracer),
-//	)
-//}
-
+//InitMicro init the micro service
 func InitMicro(addrs, name string) error {
 	if addrs == "" || name == "" {
 		return fmt.Errorf("addr(%s) or name(%s) can not be empty", addrs, name)

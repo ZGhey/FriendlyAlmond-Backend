@@ -20,10 +20,12 @@ type Boat struct {
 	Updated     int64  `gorm:"autoUpdateTime"`
 }
 
+//TableName set table name
 func (Boat) TableName() string {
 	return "boat"
 }
 
+//Pb2Normal convert protobuf objects to struct
 func (q *QueryBoat) Pb2Normal(pbListBoat *pbConfig.ListBoat) {
 	for _, value := range pbListBoat.Data {
 		boat := new(Boat)

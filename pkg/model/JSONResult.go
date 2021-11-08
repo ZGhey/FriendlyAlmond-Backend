@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+//JSONResult the response struct
 type JSONResult struct {
 	Code    string `json:"code" example:"0"`
 	Message string `json:"message" example:"success"`

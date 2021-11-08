@@ -18,9 +18,10 @@ func (l *Login) IsSameEmail(ctx context.Context, req *pbLogin.UserInfo, resp *pb
 	defer func() {
 		logger.Infof("calling IsSameEmail success, resp=%+v", resp)
 	}()
-	result := mysql.UserDB.Where("email = ?", req.Email).Find(&userInfo)
-	if result.Error != nil {
+	mysql.UserDB.Where("email = ?", req.Email).Find(&userInfo)
+	if userInfo.Email == "" {
 		resp.StatusCode = utils.RECODE_OK
+		return nil
 	}
 	resp.StatusCode = utils.RECODE_DATAEXISTENCE
 	return nil
