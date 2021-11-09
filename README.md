@@ -28,12 +28,14 @@
 
 ## Local debug mode
 Please make sure you already install all the tools, when running local debug mode.
-###Environment
+
+### Environment
 * [Go 1.16.3](https://golang.org/dl/)
 * Consul 1.10.1
 * MySQL 5.7
 * [Redis 6.2.3](https://hub.docker.com/_/redis?tab=description)
 * About the details of framework pleas look at the go.mod file
+
 ### Install Consul
 Firstly, installing the `consul` service and run it...
 
@@ -44,7 +46,6 @@ brew services start consul
 Then use `make run api` run the web service in the docker。
 
 Notes: About how to install Consul in docker, please view https://hub.docker.com/_/consul
-
 
 ### Install MySQL in Docker
 Please run the shell in deploy/mysql.sh, it will download the MySQL image from official docker hub and install it.
@@ -69,13 +70,15 @@ go run cmd/login/main.go -f conf/login.yaml
 go run cmd/order/main.go -f conf/order.yaml
 ```
 ## Running on server
-###Environment
+
+### Environment
 * [Docker 4.0.1](https://docs.docker.com/desktop/mac/release-notes/)
 * [Portainer.io 2.1.1](https://docs.portainer.io/v/ce-2.9/start/intro)
 * [Consul 1.10.1](https://hub.docker.com/_/consul)
 * [Nginx 1.20.1](https://hub.docker.com/_/nginx)
 * MySQL 5.7
 * About the details of framework pleas look at the go.mod file
+
 ## Compile and Running
 ### Compile a single service
 ```bash
